@@ -63,12 +63,11 @@ public class ConversationService {
     }
     public List<Conversation> getAllConversationsByUserId(Long userId) {
         // Retrieve all conversations associated with the specified user ID
-        System.out.println("userId: " + userId);
+
         // Call the repository to retrieve conversations by user ID
         List<Conversation> conversations = conversationRepository.findByUserId(userId);
 
         // Optionally, you can perform additional processing or filtering here if needed
-System.out.println("conversations: " + conversations);
         return conversations;
     }
 
