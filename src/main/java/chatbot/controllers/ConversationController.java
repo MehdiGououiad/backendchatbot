@@ -26,12 +26,10 @@ public class ConversationController {
             // Call the service method to create a conversation with the specified user_id and title
             Conversation conversation = conversationService.createConversation(userId);
 
-System.out.println(conversation.getUser().getUsername());
             // Return the created conversation with a 201 Created status
             List<Conversation> conversations = conversationService.getAllConversationsByUserId(userId);
 return ResponseEntity.ok(conversations);
         }  catch (Exception e) {
-            System.out.println(e.getMessage());
             // Handle other exceptions, such as validation errors
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

@@ -54,7 +54,7 @@ public class MessageController {
 
             // Send the question to the Rasa API and handle the response as a string
             // URL for Rasa API
-            String rasaApiUrl = "http://localhost:5005/model/parse";
+            String rasaApiUrl = "http://192.168.3.20:5005/model/parse";
 
 
 
@@ -85,9 +85,9 @@ public class MessageController {
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
                 // Handle the successful response
                 JsonNode rasaResponse = objectMapper.readTree(responseEntity.getBody());
-                System.out.println(rasaResponse);
                 String intent = rasaResponse.get("intent").get("name").asText();
                 String confidence = rasaResponse.get("intent").get("confidence").asText();
+                System.out.println(intent);
                 double num = Double.parseDouble(confidence);
 
                 IntentResponse intentResponse = intentResponseRepository.findByIntentName(intent);
