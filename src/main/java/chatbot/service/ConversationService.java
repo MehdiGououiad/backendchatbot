@@ -6,11 +6,10 @@ import chatbot.entity.User;
 import chatbot.repository.ConversationRepository;
 import chatbot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ConversationService {
@@ -41,19 +40,11 @@ public class ConversationService {
         // Save the conversation to the repository
         return conversationRepository.save(conversation);
     }
-    public Conversation modifyConversationTitle(Long userId, Long conversationId, String newTitle) throws Exception {
-        // Find the user by userId
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new Exception("User not found with id: " + userId));
-
+    public Conversation modifyConversationTitle( Long conversationId, String newTitle) throws Exception {
         // Find the conversation by conversationId
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new Exception("Conversation not found with id: " + conversationId));
 
-        // Check if the conversation is associated with the specified user
-        if (!conversation.getUser().equals(user)) {
-            throw new Exception("User does not have permission to modify this conversation");
-        }
 
         // Modify the conversation (e.g., update the title)
         conversation.setTitle(newTitle);
@@ -95,6 +86,19 @@ public class ConversationService {
         // Delete the conversation
         conversationRepository.delete(conversation);
     }
+//    @Scheduled(cron = "0 0 0 * * *") // Run daily at midnight
+//    public void deleteOldConversations() {
+//        // Calculate the date 10 days ago
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.add(Calendar.DAY_OF_YEAR, -1);
+//        Date tenDaysAgo = calendar.getTime();
+//
+//        // Find conversations created before 10 days ago
+//        List<Conversation> oldConversations = conversationRepository.findByTimeStamp(tenDaysAgo);
+//
+//        // Delete the old conversations
+//        conversationRepository.deleteAll(oldConversations);
+//    }
 
     //TODO: Implement the methods for the ConversationService class
     //i need a method to get messages of one conversation id

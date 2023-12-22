@@ -8,6 +8,8 @@ import chatbot.repository.MessageRepository;
 import chatbot.service.MessageService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +39,6 @@ public class MessageController {
     private final ConversationRepository conversationRepository;
 
 
-
-
     public MessageController(MessageService messageService, ObjectMapper objectMapper, IntentResponseRepository intentResponseRepository, MessageRepository messageRepository, ConversationRepository conversationRepository) {
         this.messageService = messageService;
         this.intentResponseRepository = intentResponseRepository;
@@ -47,67 +48,76 @@ public class MessageController {
         this.restTemplate = new RestTemplate();
 
     }
+
     @PostMapping("/ask")
     public ResponseEntity<String> askQuestion(@RequestParam String question, @RequestParam Long conversationId) {
         try {
             messageService.saveQuestionFromUser(question, conversationId);
 
-            // Send the question to the Rasa API and handle the response as a string
-            // URL for Rasa API
-            String rasaApiUrl = "http://192.168.3.20:5005/model/parse";
 
+            // Your Flask API URL (update the IP address and port as needed)
+            String flaskApiUrl = "http://localhost:5000/get_intent";
 
-
-// Create a Map for your request body
-            Map<String, String> map = new HashMap<>();
-            map.put("text", question);
-
-// Use Jackson ObjectMapper to serialize the map to JSON string
-            ObjectMapper objectMapper = new ObjectMapper();
-            String requestBody = objectMapper.writeValueAsString(map);
-
-// Print the JSON request body
+// No encoding is applied to the sentence
+            String completeUrl = flaskApiUrl + "?sentence=" + question;
 
 // Set headers to indicate JSON content type with UTF-8 encoding
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-// Create an HttpEntity with headers and request body
-            HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+// Create an HttpEntity with headers (no request body needed for GET request)
+            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-// Use RestTemplate to send the POST request
+// Use RestTemplate to send the GET request
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(rasaApiUrl, requestEntity, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(completeUrl, String.class, requestEntity);
 
 // Print the response status code
 
 
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                // Handle the successful response
-                JsonNode rasaResponse = objectMapper.readTree(responseEntity.getBody());
-                String intent = rasaResponse.get("intent").get("name").asText();
-                String confidence = rasaResponse.get("intent").get("confidence").asText();
-                System.out.println(intent);
-                double num = Double.parseDouble(confidence);
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode flaskResponse = objectMapper.readTree(responseEntity.getBody());
+                JsonNode intents = flaskResponse.get("intents");
+
+                // Check if there are at least two intents to compare
+                if (intents.size() > 1) {
+                    double firstIntentConfidence = intents.get(0).get("confidence").asDouble();
+                    double secondIntentConfidence = intents.get(1).get("confidence").asDouble();
+
+                    // Check if the difference in confidence is greater than 0.5
+                    if (firstIntentConfidence - secondIntentConfidence < 0.05) {
+                        // Return the top three intents as JSON
+                        // Query the database for the top intents and return their responses
+                        ArrayNode responses = objectMapper.createArrayNode();
+                        for (int i = 0; i < Math.min(3, intents.size()); i++) {
+                            String intentName = intents.get(i).get("intent").asText();
+                            IntentResponse intentResponse = intentResponseRepository.findByIntentName(intentName);
+                            if (intentResponse != null) {
+                                ObjectNode responseInfo = objectMapper.createObjectNode();
+                                responseInfo.put("intent", intentName);
+                                responseInfo.put("response", intentResponse.getResponseText());
+                                responses.add(responseInfo);
+                            }
+                        }
+                        return ResponseEntity.ok().body(responses.toString());
+                    }
+                }
+
+                String intent = flaskResponse.get("intents").get(0).get("intent").asText();
+                System.out.println("Intent: " + intent);    // Print the intent
 
                 IntentResponse intentResponse = intentResponseRepository.findByIntentName(intent);
-                if (intentResponse != null && num>0.7) {
-                    // Store the response in the Message entity (assuming you have a Message entity)
+                if (intentResponse != null) {
                     Message message = new Message();
                     message.setContent(intentResponse.getResponseText());
-                    message.setConfidence(confidence);
                     message.setIntentName(intent);
-                    // Set other properties like messageType, conversation, etc., as needed
-
+                    message.setConfidence(flaskResponse.get("intents").get(0).get("confidence").asText());
                     message.setMessageType("Response");
                     message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
                     messageRepository.save(message);
-
-                    // Save the message in your database (use your message repository)
-                    // messageRepository.save(message);
-
                     // Handle the response as needed
-                    return ResponseEntity.ok(intentResponse.getResponseText());
+                    return ResponseEntity.ok(String.valueOf(message.getId()));
                 } else {
                     // Handle the case where there's no matching response
                     Message message = new Message();
@@ -128,4 +138,4 @@ public class MessageController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-    }
+}

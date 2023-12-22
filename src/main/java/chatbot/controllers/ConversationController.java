@@ -56,6 +56,20 @@ return ResponseEntity.ok(conversations);
         }
     }
 
+    @PutMapping("/updateTitle")
+    public ResponseEntity<Conversation> modifyTitle(
+            @RequestParam Long conversationId,
+            @RequestParam String newTitle) {
+        try {
+            Conversation updatedConversation = conversationService.modifyConversationTitle(conversationId, newTitle);
+            return ResponseEntity.ok(updatedConversation);
+        } catch (Exception e) {
+            // Handle different exceptions accordingly
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
+}
+
     @DeleteMapping("/deleteByConversationId")
     public ResponseEntity<List<Conversation>> deleteConversationById(@RequestParam Long conversationId,    @RequestParam Long userId
     ) throws Exception {
