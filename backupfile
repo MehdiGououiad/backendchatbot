@@ -1,0 +1,1063 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 16.1
+-- Dumped by pg_dump version 16.0
+
+-- Started on 2023-12-25 11:43:49
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 216 (class 1259 OID 16579)
+-- Name: conversations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.conversations (
+    id bigint NOT NULL,
+    "timestamp" timestamp(6) without time zone NOT NULL,
+    title character varying(255) NOT NULL,
+    user_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.conversations OWNER TO postgres;
+
+--
+-- TOC entry 215 (class 1259 OID 16578)
+-- Name: conversations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.conversations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.conversations_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4875 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: conversations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.conversations_id_seq OWNED BY public.conversations.id;
+
+
+--
+-- TOC entry 222 (class 1259 OID 24732)
+-- Name: intent_response; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.intent_response (
+    id bigint NOT NULL,
+    intent_name character varying(255),
+    response_text text
+);
+
+
+ALTER TABLE public.intent_response OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 24731)
+-- Name: intent_response_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.intent_response_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.intent_response_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4876 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: intent_response_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.intent_response_id_seq OWNED BY public.intent_response.id;
+
+
+--
+-- TOC entry 218 (class 1259 OID 16586)
+-- Name: messages; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.messages (
+    id bigint NOT NULL,
+    content text NOT NULL,
+    message_type character varying(255) NOT NULL,
+    "timestamp" timestamp(6) without time zone NOT NULL,
+    conversation_id bigint NOT NULL,
+    confidence character varying(255),
+    intent_name character varying(255)
+);
+
+
+ALTER TABLE public.messages OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 16585)
+-- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.messages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.messages_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4877 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
+
+
+--
+-- TOC entry 220 (class 1259 OID 16595)
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id bigint NOT NULL,
+    password character varying(255) NOT NULL,
+    username character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 16594)
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4878 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- TOC entry 4703 (class 2604 OID 16582)
+-- Name: conversations id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conversations ALTER COLUMN id SET DEFAULT nextval('public.conversations_id_seq'::regclass);
+
+
+--
+-- TOC entry 4706 (class 2604 OID 24735)
+-- Name: intent_response id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.intent_response ALTER COLUMN id SET DEFAULT nextval('public.intent_response_id_seq'::regclass);
+
+
+--
+-- TOC entry 4704 (class 2604 OID 16589)
+-- Name: messages id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.messages_id_seq'::regclass);
+
+
+--
+-- TOC entry 4705 (class 2604 OID 16598)
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- TOC entry 4863 (class 0 OID 16579)
+-- Dependencies: 216
+-- Data for Name: conversations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.conversations (id, "timestamp", title, user_id) FROM stdin;
+121	2023-12-13 10:02:15.820419	Conversation	1
+122	2023-12-13 10:02:39.607129	Conversation	1
+125	2023-12-13 10:05:40.510189	Assurance	1
+127	2023-12-13 10:13:30.968779	Conversation	1
+128	2023-12-13 10:24:40.749466	Conversation	1
+129	2023-12-13 10:25:57.409073	Conversation	1
+131	2023-12-13 10:41:05.568878	Conversation	1
+132	2023-12-13 10:41:42.907544	Conversation	1
+133	2023-12-13 10:49:27.991501	congé e assurance	1
+134	2023-12-13 10:56:04.847608	Conversation	1
+137	2023-12-13 11:02:11.834151	Conversation	1
+136	2023-12-13 11:01:47.113901	Anas B	1
+138	2023-12-13 11:08:54.133498	Conversation	1
+139	2023-12-13 11:09:25.907385	Conversation	1
+140	2023-12-13 11:09:26.834005	Conversation	1
+141	2023-12-13 11:09:27.680873	Conversation	1
+142	2023-12-13 11:09:28.47756	Conversation	1
+135	2023-12-13 11:01:40.484526	yassin	1
+143	2023-12-13 11:29:31.651563	test adna	1
+144	2023-12-13 14:23:19.888694	Conversation	1
+151	2023-12-19 10:22:10.383824	Conversation	1
+153	2023-12-19 16:25:26.695873	Conversation	1
+154	2023-12-19 16:27:06.622106	Conversation	1
+155	2023-12-19 16:30:03.799241	Conversation	1
+156	2023-12-19 16:47:28.785612	Conversation	1
+159	2023-12-20 20:00:38.463433	Conversation	1
+160	2023-12-21 10:39:33.475325	Conversation	1
+\.
+
+
+--
+-- TOC entry 4869 (class 0 OID 24732)
+-- Dependencies: 222
+-- Data for Name: intent_response; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.intent_response (id, intent_name, response_text) FROM stdin;
+87	Au revoir	Au revoir, à bientôt
+4	avantages_définition_épargne_retraite_futuris_axa	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.
+5	avantages_obligation_futuris	Non
+6	avantages_part_patronale	Non
+7	avantages_montant_versement	A partir de 200 MAD/mois
+8	avantages_périodicité_versements	Mensuelle
+9	avantages_périodicité_versements_mensuelle	oui
+10	avantages_modalités_de_versement	Les cotisations sont retenues par votre employeur sur le bulletin de paie.
+12	avantages_versement_exceptionnel	Oui c'est possible d'effectuer des versements à tout moment (PTV, Prime exceptionnelle, bonus …).
+35	Droits au congé	Veuillez trouver la réponde dans le document suivant\n"DROITS AU CONGE BMCI"
+48	Intent	Réponse
+66	congé_droits	Veuillez trouver les détails de vos droits au congé dans le document ci-joint.
+14	avantages_rachat	1- Rachat partiel : maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat \n2- Rachat total possible si : \n- l’adhérent cesse son activité à la BMCI \n- il met fin au contrat \nDans les deux cas voir pénalités IR et coût du rachat
+11	avantages_changement_de_montant_versement	Oui c'est possible. Vous pouvez réviser à chaque début du mois le montant de vos versements en informant la direction des Ressources Humaines.
+15	avantages_suspension_contrat	Possible à tout moment, il faut juste informer la direction des Ressources Humaines.
+16	avantages_après_suspension_contrat	Oui, vous devez informer votre direction des Ressources Humaines afin d'annuler le prélèvement sur votre salaire et transmettre une lettre à AXA pour indiquer vos intentions.
+17	avantages_cessation_d'activité	Deux possibilités lorsque le collaborateur cesse de faire partie du personnel BMCI : 1- Maintien de son compte(en attendant l’échéance normale ou anticipée) 2- Rachète ses propres cotisations revalorisées
+18	avantages_rachat_partiel	Le rachat partiel c'est maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat
+19	avantages_rachat_total	Le rachat total est possible uniquement si : - l’adhérent cesse son activité à la BMCI - il met fin au contrat
+21	Définition_Portail_About_Me	Il s'agit d'une plateforme digitale à destination de tous les collaborateurs BMCI, des managers et des gestionnaires RH qui : 1- Favorise le développement des collaborateurs 2- Permet au collaborateur de partager ses compétences et ses expériences avec les autres au sein du groupe, de recommander les compétences de ses collègues et de leur rédiger un feedback. 3- Renforce la connaissance de chaque collaborateur 4- Propose aux collaborateurs des offres RH personnalisées (suggestions de postes, parcours de développement, formations…) 5- Simplifie la mobilité en donnant plus de visibilité aux perspectives potentielles dans le Groupe 6- Permet au collaborateur et au manager de définir le Plan de Développement du collaborateur 7- Généralise le feedback au fil de l’eau entre le manager et son collaborateur et simplifiera l’évaluation de fin d’année
+22	avantages_versement_prime_bonus	Oui, vous pouvez verser la totalité ou bien une part. Il suffit de demander à la direction des Ressources Humaines avant le 16 du mois de versement de la prime.
+23	avantages_taux_minimum_garanti	Le taux minimum garanti est de 3.25% par an
+24	avantages_rémunération_épargne	L’épargne bénéficie chaque année d’un taux de valorisation net communiqué par la compagnie AXA.
+25	avantages_taux_de_valorisation	Il faut demander à votre attaché RH.
+26	avantages_date_valeur_valorisation	Le cinquième jour ouvrable qui suit la date d’encaissement par la compagnie AXA.
+27	avantages_fiscalité_à_l'entrée	A l'entrée, une déduction des primes d’épargne du revenu global imposable à 50% pour les contrats souscrit après le 1 janvier 2015 et sans limitation pour tous contrats antérieurs à cette date.
+28	avantages_fiscalité_à_la_sortie	Si la durée minimale du contrat est de 8 ans et l’âge à la sortie à la retraite est de 50 ans révolus. Pour l'option Capital : - Capital divisé par nombre d’année de cotisation (plafonné à 4 ans maximum) - Abattement de 40% (BO du 01/07/99) sur chaque part - Imposition de chaque part selon le barème de l’IR en vigueur Pour l'option Capital : Barème IR en vigueur Abattement de 40%(BO du 01/07/99)
+29	avantages_fiscalité_à_la_sortie_option_capital	Si la durée minimale du contrat est de 8 ans et l’âge à la sortie à la retraite est de 50 ans révolus. Pour l'option Capital : - Capital divisé par nombre d’année de cotisation (plafonné à 4 ans maximum) - Abattement de 40% (BO du 01/07/99) sur chaque part - Imposition de chaque part selon le barème de l’IR en vigueur
+30	avantages_fiscalité_à_la_sortie_option_rente	Si la durée minimale du contrat est de 8 ans et l’âge à la sortie à la retraite est de 50 ans révolus. Pour l'option Capital : Barème IR en vigueur Abattement de 40%(BO du 01/07/99)
+31	avantages_déclaration_fiscale	Aucune déclaration n'est requise pour le salarié. C'est l'employeur qui doit annuellement déclarer les montants prélevés individuellement pour justifier la réduction de l'IR à régler.
+32	avantages_déclaration_fiscale_revenu_complémentaire	Vous devez procéder à la régularisation de votre situation fiscale (déclaration annuelle du revenu global).
+20	Portail_ressources_humaines	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI
+33	avantages_fiscaux	Deux conditions cumulatives liées à la durée du contrat et à l'âge du bénéficiaire doivent être respectées : 1- Le contrat d'épargne retraite doit être souscrit pour une durée minimum de 8 années 2- La rente ou le capital est servi au bénéficiaire à partir de 50 ans révolus
+34	avantages_fiscaux_à_la_sortie	Oui, encore faut-il que vous puissiez racheter votre contrat. Vous pouvez racheter votre contrat à la condition que vous cessiez votre activité au sein de votre entreprise ( départ définitif).
+36	Accident_de_travail_contre_visite	Après déclaration de l'accident de travail, le collaborateur peut être convoqué pour contre visite médicale d’usage auprès du médecin conseil de la compagnie d’assurance.\nLe règlement du dossier accident de travail par l’assureur est subordonné aux résultats de cette contre visite, à défaut aucune indemnisation ni prestation n’est prise en charge par la compagnie d’assurance.\n\n
+37	Accident_de_travail_critères	L’accident de travail, doit avoir les critères suivants: \n*Un évènement soudain;\n*Une lésion corporelle ou physique;\n*La survenance de l’accident au cours ou à l’occasion du travail.\nL’accident de  trajet doit avoir lieu pendant l’aller-retour entre le lieu du travail.\n
+38	Accident_de_travail_documents	Le collaborateur victime d’un accident de travail doit adresser au service administratif : \n. Par mail : \n-> Le certificat de constatation, indiquant son état, les blessures subis ainsi que les soins nécessaires et la durée de l’arrêt de travail (ITT) S'il y a lieu.\n. Par courrier : \n-> L’original du certificat de constatation  en double  exemplaire,\n-> Copie carte CIN de la victime, \n-> Déclaration sur l’honneur de la victime légalisée, précisant les causes et les circonstances de l’accident,\n-> Prescription et ordonnances  ( médicaments, radios, séances  de rééducation…..),\n-> Facture, prospectus, et vignettes de médicaments achetés. \n Le collaborateur victime d’un accident de travail doit adresser au service administratif, en complément du dossier AT initial :\n-> 2 déclarations de témoignage signées et légalisées par les témoins, précisant : le lieu, la date, l’heure et les circonstances du sinistre.\n -> Copie de CIN des deux témoins.\n Le collaborateur victime d’un accident de travail doit adresser au service administratif, en complément du dossier AT initial :\n-> Récépissé du dépôt de plainte auprès des autorités locales;\n-> PV de police\nNB: les accidents sanctionnés par constat amiable ne sont pas pris en considération. Toutefois, si à la suite d’un accident de circulation ayant fait l’objet d’un constat amiable, la victime ressent, plus tard , des douleurs, il lui appartient de demander, par lettre contre accusée de réception, au procureur du roi du tribunal de 1 ère instance dont dépend le lieu de l’accident, l’établissement d’un procès-verbal.\n Le collaborateur victime d’un accident de travail doit adresser au service administratif, en complément du dossier AT initial :\n-> Lettre déclarative précisant la date, le lieu, et les circonstances de l’accident,\n-> Certificats médicaux en double exemplaire,\n-> Ordre de mission lié au déplacement,\n-> PV de la police si l’accident au moment de circulation est pendant le déplacement.\n\n
+39	Accident_de_travail_déclaration	Le collaborateur doit informer le service administratif dans un délai de 48 h par le biais de sa hiérarchie, précisant la date, l’heure, le lieu et les circonstances de l’accident.\nNB : Toute déclaration faite à la DRH au-delà des 48 heures risque d’être rejetée par l’assurance, et entrainer la non prise en charge des indemnités journalières.\n
+40	Accident_de_travail_définition	Conformément aux dispositions du droit marocain, il est considéré comme accident de travail ou de trajet tout accident qui survient par le fait ou à l’occasion du travail, à une personne travaillant, pour le compte d’un ou plusieurs  employeurs.\n
+41	Accident_de_travail_indiminisation	Le collaborateur victime d’un AT perçoit ses traitements à 100% et l’assurance procède au remboursement de l’indemnité journalière en faveur de la banque. Dans le cas contraire, la banque récupère le montant non remboursé par le débit du compte bancaire de la victime.
+42	Accident_de_travail_indéminisation_guérison	En fonction de taux d'IP (incapacité permanente), le collaborateur peut bénéficier d’une indemnisation sous forme:\n-> D’un capital (taux d’IP < 10%);\n-> D’une rente viagère d’incapacité permanente (taux d’IP >= 10%).\nLa compagnie d’assurance envoie à la BMCI le PV de conciliation en 3 exemplaires, et la quittance (montant de la rente/l’indemnité en capital).\nLe collaborateur signe et légalise ces docuements et les adresse au service administratif.\n
+43	Accident_de_travail_prestation_assurance	Les prestations proposées par la compagnie d’assurance en cas d’AT sont : \n-> Les frais médicaux, pharmaceutiques, d’appareillage et de prothèse;\n-> L’assistance d’une tierce personne;\n-> Les frais funéraires en cas de décès.\n
+44	Accident_de_travail_procédure	1. Faire appel aux assistantes sociales et/ou à des intervenants externes (secours, ambulance….) pour les soins nécessaires; \n 2. Se diriger vers un médecin (conventionné ou au choix);\n 3. Comprendre les causes et les circonstances de l’accident (témoignages). 
+45	Accident_de_travail_prolongation	En cas de prolongation de l'arrêt suite à un accident de travail, le collaborateur doit envoyer au service administratif un certificat de prolongation d’arrêt de travail en deux exemplaires.\n
+46	Accident_de_travail_rechute	En cas de rechute (aggravation de la lésion initiale ou nouvelle lésion résultante de l’accident de travail ou de trajet), le médecin traitant doit établir un certificat médical de rechute au titre de l‘accident du travail initial. Le collaborateur doit envoyer ce certificat au service administratif sans dépasser un délai de 48 h après sa date d’édition. Au terme de cette période de rechute, le médecin doit à nouveau établir un nouveau certificat fixant la date de guérison ou de consolidation. \n
+47	Accident_de_travail_reprise_travail	À la reprise le collaborateur doit envoyer au service administratif en deux exemplaires : \n-> Un certificat de reprise de travail,\n-> Un certificat de guérison daté, précisant le taux IPP s’il y a lieu et les séquelles restantes.\n
+3	Bonjour	Bonjour, comment vas-tu ?
+49	Maternité_IJM_calcul	-> Durée : 14 semaines (98 jours).\n-> Montant : 100% du salaire journalier moyen soumis à cotisation (plafonné) et perçu pendant les six derniers mois précédant l’arrêt du travail rendu nécessaire par la proximité de l’accouchement.\n
+50	Maternité_IJM_conditions	Les conditions d’octroi des IJM maternité sont : \n-> être salariée immatriculée à la CNSS,\n-> justifier d'au moins 54 jours de cotisations pendant les 10 derniers mois d'immatriculation précédant la date de l’arrêt de travail pour accouchement.\n
+51	Maternité_IJM_pièces	-> Formulaire de la demande IJM dûment renseigné ; \n-> Copie de la CIN (si le dépôt n’est pas fait auparavant à la CNSS) (ou copie de la Carte Résidence / copie du Passeport pour les étrangers) ;\n-> Attestation RIB ou spécimen de chèque (si le dépôt n’est pas fait auparavant à la CNSS) ;\n-> Extrait d’acte de naissance ou, à défaut, un certificat de naissance délivré par le médecin ;\n-> Certificat de décès en cas de décès du nouveau-né.\n
+76	congé_majoration_enfant	Conformément à la législation sur la CNSS, le collaborateur peut prétendre à la majoration 'enfant à charge' en ayant la qualité de chef de famille, c’est-à-dire qu’il perçoit des allocations familiales auprès de la CNSS.  
+52	Maternité_dossier_CNSS_allaitement	La collaboratrice a droit quotidiennement durant les heures de travail, pendant une durée jusqu’à une année après la reprise réglementaire, à une demi-heure le matin et une demi-heure l’après-midi. Ce temps est accordé afin de permettre à la collaboratrice d’allaiter son enfant.  . Certificat d’allaitement délivré par son médecin à fournir au conseiller administratif;\n. En accord avec son responsable hiérarchique, la collaboratrice peut bénéficier de ce temps d’allaitement à tout moment pendant la journée de travail.  Ce temps réservé à l’allaitement est rémunéré comme temps de travail. \n
+53	Maternité_dossier_CNSS_délai	. Pour l'avis d'interruption de travail : un délai de moins de 30 jours à compter de la date d’arrêt de travail; \n. Pour la demande d'indemnités journalières de maternité : un délai de moins de 9 mois à compter de la date d'arrêt de travail.\n
+54	Maternité_droits_congé_nontitulaire	-> Non-titulaires, affiliées à la CNSS, et éligibles selon l’organisme : indemnités journalières de la CNSS pendant le congé post-natal. \n-> Sous contrat ANAPEC (non affiliées à la CNSS) : aucune indemnité pendant le congé maternité. \n\n\n
+55	Maternité_droits_congé_titulaire	Il est accordé au dames employées titulaires en état de grossesse sous déduction des prestations sociales : \n-> Congé prénatal (avant accouchement):  45 Jours avec Salaire Intégral  \n-> Congé post-natal (après accouchement):  90 jours avec Salaire Intégral  \n-> Congé conventionnel:6 Mois avec  50% de Salaire  \n-> Congé sans solde:   6 Mois  Sans salaire  \n\n
+56	Matérnité_congé_interruption	La collaboratrice doit informer son conseiller RH qui prendra en charge son affectation selon le besoin de la banque. Il informera le conseiller administratif ainsi que le service paie afin d’interrompre le congé demi solde ou sans solde en apportant les corrections  qui s’imposent en terme de  congé annuel et de traitement du salaire. 
+57	Matérnité_congé_prolongation_documents	. demande de prolongation manuscrite\n. certificat d’allaitement émanent du gynécologue ou du pédiatre.  \n. L'accord est matérialisé par une lettre établie par le conseiller administratif, précisant la durée et la date de reprise.\n
+58	Matérnité_congé_prolongation_délai	Au plus tard 15 jours avant de la date de reprise prévue, en déposant les documents demandés pour ce faire.\n
+59	Matérnité_congé_prénatal	Le congé prénatal s’étale de la date mentionnée dans le certificat de 7 mois et demi de grossesse jusqu’à la date d’accouchement. La durée totale du congé prénatal est majorée à 45 jours. \n
+60	Matérnité_congé_prénatal_procédure	La collaboratrice doit transmettre à son conseiller administratif son certificat de grossesse de 7 mois et demi qui matérialise sa demande par une lettre d’acceptation d’un congé prénatal contenant les démarches nécessaires à accomplir après l’accouchement.\n
+61	Matérnité_documents_accouchement	*3 extraits de naissance  *l’accusé de réception relatif au dépôt des IJM maternité auprès de la CNSS. \n
+62	Matérnité_prolongation_congé_impact	Dans le cas où la collaboratrice demande un congé maternité  demi solde et/ou sans solde , une partie de son solde de congé annuel sera liquidé. C’est-à-dire qu'elle doit consommer les droits de congé de l’année écoulée et de la période post-natal. Un ajustement du reliquat de congé sera exécuté en fonction de la période de non présence de l’intéressée.\n
+63	Matérnité_traitement_salaire	Conformément à la convention collective, les collaboratrices en état de grossesse bénéficieront durant leurs congé prénatal et post -natal du plein traitement du salaire à condition que celles-ci déposent  une demande des indemnités journalière de maternité auprès de la CNSS. \nLe conseiller administratif effectue un suivi régulier de la perception des IJM. Une fois que les IJM sont encaissées par la collaboratrice, la banque débite le montant correspondant. A défaut, la banque récupère automatiquement le montant équivalent aux IJM, après une période de 3 mois à compter de la date d’interruption de travail. En cas de non-respect du dépôt de la demande d’indemnités auprès de la CNSS, la collaboratrice peut être débitée si la banque ne récupère pas l’équivalent des indemnités liées au congé maternité.  
+64	congé_annulation_en_attente	Dans l'espace OPEN HR, Rubrique  "Mes demandes " : il vous suffit de cocher la période concernée par la suppression, appuyer sur le bouton annuler puis confirmer. 
+65	congé_demande	La demande du congé annuel se fait sur OpenHR, dans la rubrique "Mes absences". Il s'uffit de cliquer sur "Demande de congé" afin de renseigner votre demande et la valider. Votre manager recevra la notification afin de l'approuver. 
+67	congé_durée_maximale	La durée totale du congé annuel ne peut excéder 31 jours ouvrables.
+68	congé_délais_de_route_conditions	Les collaborateurs ont droit à une majoration de 7 jours tous les deux ans, à titre de délai de route, à condition d’épuiser la moitié de leur droit de congé en jours ouvrables(*)à l’étranger.  (*) Dimanche et jour férié non décompté.   
+69	congé_délais_de_route_procédure	Le collaborateur doit  transmettre à son conseiller administratif les copies des cachets de sortie et d’entrée au territoire national ainsi que la première page contenant ses informations personnelles de son passeport.  
+70	congé_exceptionnel_demande	Les demandes de congé spéciaux sont saisies par le manager et validées par le conseiller administratif  RH dès réception du justificatif lié à l’événement. 
+71	congé_exceptionnel_définition	Un congé exceptionnel est un congé de courte durée accordé pour des rasions familiales. Il s’agit bien évidement d’une autorisation d’absence suite à un événement survenu.  
+72	congé_exceptionnel_evenements_familiaux	Veuillez trouver les détails de vos droits aux congés exceptionnels dans le document ci-joint.
+73	congé_majoration_calcul	La majoration hors saison est calculée en prorata, c’est-à-dire en fonction des jours pris durant le mois concerné par la majoration, elle se calcule automatiquement une fois que la demande de congé est validée par le manager.
+74	congé_majoration_conditions	Possibilité de bénéficier de jours supplémentaires en prenant un congé en dehors de la période des vacances scolaires, sous réserve de consommer en une seule fois la moitié de ses droits de congé annuels durant les mois concernés par la majoration. 
+75	congé_majoration_droits	Selon l'article 62 de la convention collective : \n-> Février 4 jours; \n-> Mars 3 jours;  \n-> Avril 2 jours; \n-> Mai 1 jour; \n-> Octobre 2 jours; \n-> Novembre 3 jours;  \n-> Décembre 4 jours 
+77	congé_pélerinage_condition	-> Minimum 15 ans d’ancienneté au sein de la banque ; \n-> tiré(e) au sort dans son arrondissement ou caïdat.\n-> Reçu du paiement 
+78	congé_pélerinage_procédure	Le collaborateur doit transmettre à son conseiller administratif une copie des cachets de sortie et d’entrée de son passeport après son retour, qui se chargera de vérifier conditions d’éligibilité et de convertir les 12 jours ouvrables, du congé annuel pris, en congé pélerinage. 
+79	congé_validé_annulation	Le collaborateur peut faire l'annulation via son espace OPEN HR Rubrique  "Mes absences", onglet "Annulation de congé " : il  suffit  d' appuyer sur le bouton "modifier" puis sur le bouton  valider /envoyer. \n
+80	congé_validé_non_consomé_annulation	Il suffit de transmettre votre demande d’annulation au gestionnaire administratif en lui communiquant une nouvelle planification de congé (congé de remplacement).
+81	congé_évolution_droits	Les droits de congé évoluent en foncion  de trois paramètres : l’ancienneté, le grade et l’enfant à charge.\nCette évolution est accordée pratiquement le 1 er janvier de l’année N+1.  \nLa majoration enfant à charge est d’un jour par enfant avec un maximum de 4 jours. A noter que la durée totale ne peut en aucun cas excéder 31 jours ouvrables de date à date. 
+82	mise_en_disponibilité_SS_demande	Transmettre à son conseiller administratif RH une demande manuscrite en exprimant son besoin et expliquant les motifs de ce départ provisoire.  Il doit également, accompagner sa demande par des justificatifs probants justifiant son souhait. 
+83	mise_en_disponibilité_SS_définition	La mise en disponibilité sans solde est un congé par lequel le collaborateur sollicite la suspension provisoire de son contrat pour des raisons multiples (enfant ou ascendant gravement malade, regroupement familiale , étude …), suivant le bulletin médical et sous réserve des vérifications d’usage.  Elle est assimilée à un départ définitif nécessitant la liquidation des droits au congé après réajustement et l’arrêté de la paie. Toutefois, le collaborateur est maintenu sans solde dans l’effectif et sera affecté à la DRH.     
+84	mise_en_disponibilité_SS_prolongation	Si le collaborateur souhaite prolonger son congé sans solde, il doit soumettre au plus tard 15 jours avant de la date de reprise prévue , une demande de renouvellement de son congé sans solde. Elle sera traitée dans les même conditions que la première demande. 
+85	mise_en_disponibilité_SS_reprise	À l’issue de la période accordée pour la mise en disponibilité, le collaborateur est affecté à un poste selon le besoin de la banque. À la date de la reprise prévue, le collaborateur dispose d’un délai de 48h pour reprendre ses fonctions. Le non respect de ce délai peut entrainer la rupture de son contrat et ce conformément aux dispositions légales requises en la matière
+86	mise_en_disponibilité_SS_validation	Une fois la demande étudiée et validée par la DRH, le conseiller administratif RH matérialise les décisions par une lettre d’accord précisant:  \n-> la durée du congé et la date de reprise; \n-> les conditions de réintégration; \n-> le montant des cotisations sociales ( dans le cas du maintien de la couverture);\n-> le montant des échéances des prêts en cours à rembourser mensuellement. 
+\.
+
+
+--
+-- TOC entry 4865 (class 0 OID 16586)
+-- Dependencies: 218
+-- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.messages (id, content, message_type, "timestamp", conversation_id, confidence, intent_name) FROM stdin;
+678	Quels sont mes portails RH ?	Question	2023-12-13 10:03:20.692356	122	\N	\N
+679	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 10:03:21.304462	122	0.836175262928009	Portail_ressources_humaines
+680	C'est quoi Futuris ?	Question	2023-12-13 10:03:49.736103	122	\N	\N
+681	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:03:49.812437	122	0.9944528937339783	avantages_définition_épargne_retraite_futuris_axa
+682	Puis je débloquer mon épargne à n'importe quel moment ? *	Question	2023-12-13 10:04:12.690614	122	\N	\N
+683	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:04:12.842108	122	\N	\N
+684	Puis je débloquer mon épargne à n'importe quel moment ? 	Question	2023-12-13 10:04:13.783683	122	\N	\N
+685	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:04:13.840417	122	\N	\N
+686	futuris est il imposable ? 	Question	2023-12-13 10:04:40.077156	122	\N	\N
+687	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:04:40.129602	122	\N	\N
+688	quel montant maximum puis je envoyer dans futuris ? 	Question	2023-12-13 10:05:02.476718	122	\N	\N
+689	Oui c'est possible. Vous pouvez réviser à chaque début du mois le montant de vos versements en informant la direction des Ressources Humaines.	Response	2023-12-13 10:05:02.55231	122	0.9772153496742249	avantages_changement_de_montant_versement
+694	Ou pourrai-je saisir mes congés ? 	Question	2023-12-13 10:07:17.024242	125	\N	\N
+695	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:07:17.102991	125	\N	\N
+696	mes indemenités 	Question	2023-12-13 10:07:23.655715	122	\N	\N
+697	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:07:23.717952	122	\N	\N
+698	Combien on peut mettre sur l'epargne retraite ?	Question	2023-12-13 10:07:27.545348	125	\N	\N
+699	A partir de 200 MAD/mois	Response	2023-12-13 10:07:27.608717	125	0.9793202877044678	avantages_montant_versement
+700	C'est quoi Futuris ?	Question	2023-12-13 10:07:48.249208	125	\N	\N
+701	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:07:48.272382	125	0.9944528937339783	avantages_définition_épargne_retraite_futuris_axa
+702	Quelles sont les règles de rachat partiel	Question	2023-12-13 10:07:51.157984	125	\N	\N
+703	Le rachat partiel c'est maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat	Response	2023-12-13 10:07:51.219728	125	0.9092774987220764	avantages_rachat_partiel
+704	c'est quoi mes avantages ? 	Question	2023-12-13 10:07:55.569983	122	\N	\N
+705	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:07:55.611276	122	\N	\N
+708	maternité 	Question	2023-12-13 10:08:14.851249	122	\N	\N
+709	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:08:14.904467	122	\N	\N
+710	Congé Maternité 	Question	2023-12-13 10:08:28.798969	122	\N	\N
+711	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:08:28.841552	122	\N	\N
+712	congé maternité	Question	2023-12-13 10:08:50.429463	122	\N	\N
+713	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:08:50.462867	122	\N	\N
+714	Quelles sont les règles de congés maternité	Question	2023-12-13 10:08:56.832219	125	\N	\N
+715	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:08:56.868659	125	\N	\N
+718	Congés maternité 	Question	2023-12-13 10:09:10.055099	125	\N	\N
+719	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:09:10.084561	125	\N	\N
+720	Quels sont mes portails RH ?	Question	2023-12-13 10:09:23.029587	125	\N	\N
+721	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 10:09:23.061053	125	0.836175262928009	Portail_ressources_humaines
+722	congé prénatal 	Question	2023-12-13 10:09:56.187526	122	\N	\N
+723	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:09:56.219237	122	\N	\N
+724		Question	2023-12-13 10:09:57.50559	122	\N	\N
+725	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:09:57.51531	122	\N	\N
+726	Quelle est la durée de congé maternité ? 	Question	2023-12-13 10:10:12.714516	125	\N	\N
+727	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:10:12.765642	125	\N	\N
+728	congé maternité prenatal	Question	2023-12-13 10:10:13.485605	122	\N	\N
+729	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:10:13.544293	122	\N	\N
+730	Congé prénatal	Question	2023-12-13 10:10:38.232859	122	\N	\N
+731	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:10:38.26578	122	\N	\N
+732	c'est quoi un congé maternité prénatalae	Question	2023-12-13 10:10:56.046866	122	\N	\N
+733	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:10:56.094207	122	\N	\N
+734	quelles sont les modalités du congés maternité ? 	Question	2023-12-13 10:11:24.412568	125	\N	\N
+735	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:11:24.459845	125	\N	\N
+736	Qu'est ce que le congé prénata	Question	2023-12-13 10:11:36.612765	122	\N	\N
+737	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:11:36.675703	122	\N	\N
+738	Quelle est la durée de la période d'essai ? 	Question	2023-12-13 10:12:52.856718	125	\N	\N
+739	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:12:52.956681	125	\N	\N
+740	Après la titularisation, est-ce que mes jours de congés seront mis à jour ? 	Question	2023-12-13 10:13:43.618008	125	\N	\N
+741	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:13:43.887952	125	\N	\N
+742	Qu'est ce que le congé prénata	Question	2023-12-13 10:13:49.928862	122	\N	\N
+743	Le congé prénatal s’étale de la date mentionnée dans le certificat de 7 mois et demi de grossesse jusqu’à la date d’accouchement. La durée totale du congé prénatal est majorée à 45 jours. \n	Response	2023-12-13 10:13:49.975926	122	0.4024697244167328	Matérnité_congé_prénatal
+744	les jours d'arrêt en cas de décès	Question	2023-12-13 10:14:12.543695	127	\N	\N
+745	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:14:12.613986	127	\N	\N
+746	IJM	Question	2023-12-13 10:14:55.875662	122	\N	\N
+747	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:14:55.926571	122	0.993565022945404	avantages_définition_épargne_retraite_futuris_axa
+748	Quelle est la durée du congé maternité ?	Question	2023-12-13 10:15:14.702917	125	\N	\N
+749	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:15:14.734716	125	\N	\N
+750	congés maternité prenatal	Question	2023-12-13 10:15:26.443154	125	\N	\N
+751	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:15:26.500204	125	\N	\N
+752	congé maternité prenatal	Question	2023-12-13 10:15:39.117334	125	\N	\N
+753	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:15:39.164406	125	\N	\N
+754	est-ce qu'on a le droit à un congé de paternité ? 	Question	2023-12-13 10:16:24.091041	125	\N	\N
+755	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:16:24.1857	125	\N	\N
+756	piéces à fournir pour maternité 	Question	2023-12-13 10:16:29.070942	122	\N	\N
+757	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:16:29.129026	122	\N	\N
+758	mobilité ? 	Question	2023-12-13 10:16:57.232641	122	\N	\N
+759	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:16:57.280883	122	\N	\N
+760	Quand est-ce que se terminera ma période d'essai ? 	Question	2023-12-13 10:17:00.784116	125	\N	\N
+761	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:17:00.847029	125	\N	\N
+762	Quand est-ce que je passerai mon prochain entretien d'évaluation ? 	Question	2023-12-13 10:17:23.547846	125	\N	\N
+763	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:17:23.626074	125	\N	\N
+764	epargne AXA	Question	2023-12-13 10:17:40.164232	122	\N	\N
+765	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:17:40.242722	122	0.879176139831543	avantages_définition_épargne_retraite_futuris_axa
+766	les documents à fournir pour la déclaration IR	Question	2023-12-13 10:17:51.565404	127	\N	\N
+767	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:17:51.612297	127	\N	\N
+768	est-ce que je peux reporter mes jours de congés à l'année prochaine ? 	Question	2023-12-13 10:17:55.803018	125	\N	\N
+769	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:17:55.849915	125	\N	\N
+770	maternité	Question	2023-12-13 10:17:56.994088	122	\N	\N
+771	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:17:57.039943	122	\N	\N
+772	Quels sont les horaires de travail ? 	Question	2023-12-13 10:18:22.830583	125	\N	\N
+773	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:18:22.908659	125	\N	\N
+774	Congé maternité titulaire ?	Question	2023-12-13 10:18:29.475442	122	\N	\N
+775	Il est accordé au dames employées titulaires en état de grossesse sous déduction des prestations sociales : \n-> Congé prénatal (avant accouchement):  45 Jours avec Salaire Intégral  \n-> Congé post-natal (après accouchement):  90 jours avec Salaire Intégral  \n-> Congé conventionnel:6 Mois avec  50% de Salaire  \n-> Congé sans solde:   6 Mois  Sans salaire  \n\n	Response	2023-12-13 10:18:29.522792	122	0.47689923644065857	Maternité_droits_congé_titulaire
+776	comment je peux faire un rachat partiel futuris	Question	2023-12-13 10:18:52.173755	127	\N	\N
+777	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:18:52.205035	127	\N	\N
+778	prénatal procédure ? 	Question	2023-12-13 10:19:10.366499	122	\N	\N
+779	La collaboratrice doit transmettre à son conseiller administratif son certificat de grossesse de 7 mois et demi qui matérialise sa demande par une lettre d’acceptation d’un congé prénatal contenant les démarches nécessaires à accomplir après l’accouchement.\n	Response	2023-12-13 10:19:10.418682	122	0.6030110120773315	Matérnité_congé_prénatal_procédure
+780	Quand est-ce que je passerai mon entretien de gestion de carrière ?	Question	2023-12-13 10:19:26.559533	125	\N	\N
+781	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:19:26.606092	125	\N	\N
+782	comment je peux faire un rachat partiel	Question	2023-12-13 10:19:30.651249	127	\N	\N
+783	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:19:30.682828	127	\N	\N
+784	Quels sont les papiers à fournir après accouchement?	Question	2023-12-13 10:19:39.964042	122	\N	\N
+785	*3 extraits de naissance  *l’accusé de réception relatif au dépôt des IJM maternité auprès de la CNSS. \n	Response	2023-12-13 10:19:40.01097	122	0.8116533756256104	Matérnité_documents_accouchement
+786	rachat partiel	Question	2023-12-13 10:19:46.381814	127	\N	\N
+787	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:19:46.413176	127	\N	\N
+788	rachat futuris	Question	2023-12-13 10:19:58.258247	127	\N	\N
+789	1- Rachat partiel : maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat\\n2- Rachat total : Possible si\\n- l’adhérent cesse son activité à la BMCI\\n- il met fin au contrat\\nDans les deux cas voir pénalités IR et coût du rachat	Response	2023-12-13 10:19:58.292017	127	0.5885708332061768	avantages_rachat
+790	prolongation maternité 	Question	2023-12-13 10:20:15.174939	122	\N	\N
+791	. demande de prolongation manuscrite\n. certificat d’allaitement émanent du gynécologue ou du pédiatre.  \n. L'accord est matérialisé par une lettre établie par le conseiller administratif, précisant la durée et la date de reprise.\n	Response	2023-12-13 10:20:15.201957	122	0.8278288245201111	Matérnité_congé_prolongation_documents
+792	pénalités ir	Question	2023-12-13 10:20:39.736222	127	\N	\N
+793	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:20:39.76639	127	\N	\N
+794	Quel est le montant de la prime de marriage ? 	Question	2023-12-13 10:20:47.245981	125	\N	\N
+795	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:20:47.301963	125	\N	\N
+796	Quels sont mes portails RH ?	Question	2023-12-13 10:20:51.814099	127	\N	\N
+797	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 10:20:51.845721	127	0.836175262928009	Portail_ressources_humaines
+798	IJM conditions ? 	Question	2023-12-13 10:20:57.661444	122	\N	\N
+799	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:20:57.705671	122	\N	\N
+800	Quel est le montant de la prime de naissance ? 	Question	2023-12-13 10:21:03.195692	125	\N	\N
+801	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:21:03.242959	125	\N	\N
+802	IJM droits	Question	2023-12-13 10:21:15.776025	122	\N	\N
+803	Les conditions d’octroi des IJM maternité sont : \n-> être salariée immatriculée à la CNSS,\n-> justifier d'au moins 54 jours de cotisations pendant les 10 derniers mois d'immatriculation précédant la date de l’arrêt de travail pour accouchement.\n	Response	2023-12-13 10:21:15.82014	122	0.9047278165817261	Maternité_IJM_conditions
+804	Quel est le montant de la prime de scolarité ?	Question	2023-12-13 10:21:24.361997	125	\N	\N
+805	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:21:24.395069	125	\N	\N
+806	IJM calcul 	Question	2023-12-13 10:21:34.981241	122	\N	\N
+807	-> Durée : 14 semaines (98 jours).\n-> Montant : 100% du salaire journalier moyen soumis à cotisation (plafonné) et perçu pendant les six derniers mois précédant l’arrêt du travail rendu nécessaire par la proximité de l’accouchement.\n	Response	2023-12-13 10:21:35.019302	122	0.8211829662322998	Maternité_IJM_calcul
+808	Combien on peut mettre sur l'epargne retraite ?	Question	2023-12-13 10:21:38.357043	127	\N	\N
+809	A partir de 200 MAD/mois	Response	2023-12-13 10:21:38.388382	127	0.9793202877044678	avantages_montant_versement
+810	Quel est la procédure pour récupérer l'ensemble des primes ?	Question	2023-12-13 10:21:44.821759	125	\N	\N
+811	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:21:44.869064	125	\N	\N
+812	Quelle est la procédure pour récupérer l'ensemble des primes ?	Question	2023-12-13 10:22:11.230398	125	\N	\N
+813	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:22:11.246441	125	\N	\N
+814	Quelle est la procédure pour récupérer les documents de visa Schengen ?	Question	2023-12-13 10:22:46.855803	125	\N	\N
+815	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:22:46.902418	125	\N	\N
+816	la durée de rachat total	Question	2023-12-13 10:23:16.8461	127	\N	\N
+817	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:23:16.877041	127	\N	\N
+818	Quels sont les critères d'éligibilité pour les centres de vacances ?	Question	2023-12-13 10:23:40.876876	125	\N	\N
+819	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:23:40.939278	125	\N	\N
+820	quand est ce que je peux racheter mon épargne sans IR	Question	2023-12-13 10:24:11.663421	127	\N	\N
+821	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:24:11.710302	127	\N	\N
+822	Quels est le nombre de jours de congés par an ?	Question	2023-12-13 10:24:30.536755	125	\N	\N
+823	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:24:30.582107	125	\N	\N
+824	IJM 	Question	2023-12-13 10:24:36.922353	122	\N	\N
+825	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:24:36.951181	122	0.993565022945404	avantages_définition_épargne_retraite_futuris_axa
+826	Quel est mon solde de congé actuel ?	Question	2023-12-13 10:25:03.522075	125	\N	\N
+827	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:25:03.553687	125	\N	\N
+828	indemenités journaliéres 	Question	2023-12-13 10:25:07.451602	122	\N	\N
+829	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:25:07.482879	122	0.9955230951309204	avantages_définition_épargne_retraite_futuris_axa
+830	comment ajouter mon mari dans cmim	Question	2023-12-13 10:25:36.990043	128	\N	\N
+831	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:25:37.021344	128	\N	\N
+832	Comment pourrais-je calculer mon IJM ?	Question	2023-12-13 10:25:47.031322	125	\N	\N
+833	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:25:47.083716	125	0.6509757041931152	avantages_définition_épargne_retraite_futuris_axa
+834	Ou puis-je trouver les conventions BMCI ? 	Question	2023-12-13 10:26:24.871616	125	\N	\N
+835	Non	Response	2023-12-13 10:26:24.922949	125	0.9133104681968689	avantages_obligation_futuris
+836	futuris AXA	Question	2023-12-13 10:27:27.812002	122	\N	\N
+837	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:27:27.848289	122	0.9955295920372009	avantages_définition_épargne_retraite_futuris_axa
+838	pouvez vous me fournir l'attestation de salaire et l'attestation du travail 	Question	2023-12-13 10:27:29.639654	129	\N	\N
+839	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:27:29.717964	129	\N	\N
+840	Futuris 	Question	2023-12-13 10:27:44.94927	122	\N	\N
+841	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:27:44.979087	122	0.9944456815719604	avantages_définition_épargne_retraite_futuris_axa
+842	Est-ce qu'on a le droit au 13ème mois ? 	Question	2023-12-13 10:27:59.149748	125	\N	\N
+843	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:27:59.197068	125	\N	\N
+844	Quels sont les bonus auxquels j'ai droit ? 	Question	2023-12-13 10:28:42.865198	125	\N	\N
+845	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:28:42.903219	125	\N	\N
+846	Bonjour 	Question	2023-12-13 10:29:23.482769	122	\N	\N
+847	Bonjour, comment vas-tu ?	Response	2023-12-13 10:29:23.522878	122	0.9626060128211975	salutation
+848	pas mal et toi 	Question	2023-12-13 10:29:32.567543	122	\N	\N
+849	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:29:32.609461	122	\N	\N
+850	J'ai pris 1 semaine de congés, quel est le montant IJM qui va être prélever ? 	Question	2023-12-13 10:30:31.199063	125	\N	\N
+851	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:30:31.261945	125	\N	\N
+852	Mes attestations ? 	Question	2023-12-13 10:30:42.127452	122	\N	\N
+853	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:30:42.169142	122	\N	\N
+854	je souhaite connaitre mes droits de congé 	Question	2023-12-13 10:30:59.250624	122	\N	\N
+855	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:30:59.29291	122	\N	\N
+856	Mes congés ? 	Question	2023-12-13 10:31:08.455428	122	\N	\N
+857	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:31:08.484158	122	\N	\N
+858	Mes droits de congés? 	Question	2023-12-13 10:31:18.654394	122	\N	\N
+859	Veuillez trouver les détails de vos droits au congé dans le document ci-joint.	Response	2023-12-13 10:31:18.685381	122	0.5250157713890076	congé_droits
+860	Comment demander une rencontre avec mon conseillé RH ? 	Question	2023-12-13 10:31:20.119006	125	\N	\N
+861	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:31:20.182528	125	\N	\N
+862	Comment suivre mes demandes de remboursements maladie ? 	Question	2023-12-13 10:31:59.794141	125	\N	\N
+863	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:31:59.831938	125	\N	\N
+864	C'est quoi Futuris ?	Question	2023-12-13 10:42:13.536281	131	\N	\N
+865	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:42:13.975827	131	0.9944528937339783	avantages_définition_épargne_retraite_futuris_axa
+866	quelles sont les modalités pour bénéficier ma retra	Question	2023-12-13 10:42:23.704982	125	\N	\N
+867	Les cotisations sont retenues par votre employeur sur le bulletin de paie.	Response	2023-12-13 10:42:23.814768	125	0.6964052319526672	avantages_modalités_de_versement
+868	Je sors à la retraite dans 10 ans, comment m'y préparer dès maintenant ?	Question	2023-12-13 10:42:40.646874	131	\N	\N
+869	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:42:40.811106	131	\N	\N
+870	Comment maximiser ma pension de retraite ?	Question	2023-12-13 10:43:02.492223	131	\N	\N
+871	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:43:02.560682	131	\N	\N
+872	oui je sors en retraite, j'aimerais savoir le montant de ma pension	Question	2023-12-13 10:43:09.343037	125	\N	\N
+873	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:43:09.418223	125	\N	\N
+874	Est ce que ma pension sera d'un montant équivalent à mon salaire actuel ?	Question	2023-12-13 10:43:51.635699	131	\N	\N
+875	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:43:51.72749	131	\N	\N
+876	est ce qu'il y a des conventions avec les clubs de sport ?	Question	2023-12-13 10:44:04.760073	125	\N	\N
+877	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:44:04.835611	125	\N	\N
+878	Puis je aménager ma semaine de travail tout en garantissant les 40 heures hebdomadaires ?	Question	2023-12-13 10:44:44.546849	131	\N	\N
+879	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:44:44.637136	131	\N	\N
+880	Quel est l'impact du grade sur ma cotisation retraite ?	Question	2023-12-13 10:45:20.175189	131	\N	\N
+881	Oui c'est possible d'effectuer des versements à tout moment (PTV, Prime exceptionnelle, bonus …).	Response	2023-12-13 10:45:20.235944	131	0.6367241740226746	avantages_versement_exceptionnel
+882	COMMENT se passe les augmentations salariales?	Question	2023-12-13 10:45:33.487119	125	\N	\N
+883	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:45:33.548462	125	\N	\N
+884	Comment est calculée ma pension de retraite ?	Question	2023-12-13 10:45:46.587717	131	\N	\N
+885	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:45:46.633579	131	\N	\N
+886	comment bénéficier du délai de route	Question	2023-12-13 10:46:26.300374	132	\N	\N
+887	Les collaborateurs ont droit à une majoration de 7 jours tous les deux ans, à titre de délai de route, à condition d’épuiser la moitié de leur droit de congé en jours ouvrables(*)à l’étranger.  (*) Dimanche et jour férié non décompté.   	Response	2023-12-13 10:46:26.347377	132	0.43527844548225403	congé_délais_de_route_conditions
+888	quels sont mes avantages en tant salarié? 	Question	2023-12-13 10:46:48.516434	125	\N	\N
+889	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:46:48.563338	125	\N	\N
+890	je souhaite bénéficier de formations certifiante	Question	2023-12-13 10:47:36.308713	125	\N	\N
+891	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:47:36.356049	125	\N	\N
+892	Mon nombre de jours de congés dépend de quels paramètres ?	Question	2023-12-13 10:47:38.869531	131	\N	\N
+893	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:47:38.932133	131	\N	\N
+894	comment récupérer les attestations de travail 	Question	2023-12-13 10:47:45.89837	132	\N	\N
+895	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:47:45.935143	132	\N	\N
+896	Bonjour 	Question	2023-12-13 10:48:44.199307	131	\N	\N
+897	Bonjour, comment vas-tu ?	Response	2023-12-13 10:48:44.235228	131	0.9626060128211975	salutation
+898	comment bénéficier du délai de route?	Question	2023-12-13 10:48:58.351767	125	\N	\N
+899	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:48:58.37299	125	\N	\N
+900	quels sont les taux de crédits pour le personnel?	Question	2023-12-13 10:49:33.775556	125	\N	\N
+901	Le taux minimum garanti est de 3.25% par an	Response	2023-12-13 10:49:33.831697	125	1.0	avantages_taux_minimum_garanti
+902	Quels sont mes portails RH ?	Question	2023-12-13 10:49:58.831784	132	\N	\N
+903	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 10:49:58.885411	132	0.836175262928009	Portail_ressources_humaines
+904	C'est quoi Futuris ?	Question	2023-12-13 10:50:50.383303	133	\N	\N
+905	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:50:50.419784	133	0.9944528937339783	avantages_définition_épargne_retraite_futuris_axa
+906	quel est le taux de crédit à la consommation	Question	2023-12-13 10:51:15.898996	125	\N	\N
+907	Le taux minimum garanti est de 3.25% par an	Response	2023-12-13 10:51:15.939298	125	0.9913638830184937	avantages_taux_minimum_garanti
+908	je viens de rejoindre la BMCI que dois je savoir ? 	Question	2023-12-13 10:51:24.246685	133	\N	\N
+909	Deux possibilités lorsque le collaborateur cesse de faire partie du personnel BMCI : 1- Maintien de son compte(en attendant l’échéance normale ou anticipée) 2- Rachète ses propres cotisations revalorisées	Response	2023-12-13 10:51:24.305878	133	0.4437207281589508	avantages_cessation_d'activité
+910	Quels sont mes avantages ?	Question	2023-12-13 10:51:51.040913	133	\N	\N
+911	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:51:51.076605	133	\N	\N
+912	c'est quoi les regles de rachat total	Question	2023-12-13 10:52:20.042983	125	\N	\N
+913	Le rachat total est possible uniquement si : - l’adhérent cesse son activité à la BMCI - il met fin au contrat	Response	2023-12-13 10:52:20.090296	125	0.8667360544204712	avantages_rachat_total
+914	Mon neveu se marie en Aout 2024. Est-ce que j'ai droit à quelques jours de congés ? 	Question	2023-12-13 10:52:27.552838	133	\N	\N
+915	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:52:27.628807	133	\N	\N
+916	Je veux poser mes questions. Comment dois-je procéder ? 	Question	2023-12-13 10:53:03.015699	133	\N	\N
+917	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:53:03.087438	133	\N	\N
+918	Quelles sont les étapes de mon Onboarding RH ? 	Question	2023-12-13 10:53:43.837248	133	\N	\N
+919	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:53:43.886961	133	\N	\N
+920	Quel est le taux d'imposition à la source ?	Question	2023-12-13 10:54:02.87446	133	\N	\N
+921	Le taux minimum garanti est de 3.25% par an	Response	2023-12-13 10:54:02.917651	133	1.0	avantages_taux_minimum_garanti
+922	A quelle date sont versés les salaires ? 	Question	2023-12-13 10:54:22.091491	133	\N	\N
+923	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:54:22.146987	133	\N	\N
+924	Rachat total futiris	Question	2023-12-13 10:54:36.638257	125	\N	\N
+925	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:54:36.686619	125	\N	\N
+926	Comment suis-je notifié du versement de mon salaire ? 	Question	2023-12-13 10:54:39.702358	133	\N	\N
+927	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:54:39.7669	133	\N	\N
+928	a qui peut on s'adresser côté RH pour revoir le bulletin de paie	Question	2023-12-13 10:54:54.488757	132	\N	\N
+929	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:54:54.541199	132	\N	\N
+930	A combien de jours de congés ai-je droit ? 	Question	2023-12-13 10:54:59.501529	133	\N	\N
+931	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:54:59.557092	133	\N	\N
+932	comment faire un rachat futuris?	Question	2023-12-13 10:55:06.560707	125	\N	\N
+933	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:55:06.600533	125	\N	\N
+934	Quelles sont les régles à respecter pour poser ces congés ? 	Question	2023-12-13 10:55:27.362828	133	\N	\N
+935	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:55:27.408262	133	\N	\N
+936	Combien on peut mettre sur l'epargne retraite ?	Question	2023-12-13 10:55:47.939113	132	\N	\N
+937	A partir de 200 MAD/mois	Response	2023-12-13 10:55:47.967795	132	0.9793202877044678	avantages_montant_versement
+938	Quels sont mes portails RH ?	Question	2023-12-13 10:56:27.258479	134	\N	\N
+939	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 10:56:27.279916	134	0.836175262928009	Portail_ressources_humaines
+940	c'est quoi la situation de ma retraire actuelle	Question	2023-12-13 10:56:37.722966	132	\N	\N
+941	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:56:37.777035	132	\N	\N
+942	Combien on peut mettre sur l'epargne retraite ?	Question	2023-12-13 10:56:55.199926	134	\N	\N
+943	A partir de 200 MAD/mois	Response	2023-12-13 10:56:55.231883	134	0.9793202877044678	avantages_montant_versement
+944	Comment puis-je accéder au catalogue formation ? 	Question	2023-12-13 10:56:59.794621	133	\N	\N
+945	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:56:59.846391	133	\N	\N
+946	C'est quoi Futuris ?	Question	2023-12-13 10:57:01.522415	134	\N	\N
+947	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:57:01.558687	134	0.9944528937339783	avantages_définition_épargne_retraite_futuris_axa
+948	Quels sont mes portails RH ?	Question	2023-12-13 10:57:05.402123	133	\N	\N
+949	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 10:57:05.426628	133	0.836175262928009	Portail_ressources_humaines
+950	C'est quoi Futuris ?	Question	2023-12-13 10:57:18.831863	133	\N	\N
+951	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:57:18.864433	133	0.9944528937339783	avantages_définition_épargne_retraite_futuris_axa
+952	comment souscrire?	Question	2023-12-13 10:57:25.869564	134	\N	\N
+953	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:57:25.90019	134	\N	\N
+954	comment en bénéficier ? 	Question	2023-12-13 10:57:41.496452	133	\N	\N
+955	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:57:41.528617	133	\N	\N
+956	Quels sont mes portails RH ?	Question	2023-12-13 10:57:48.944667	133	\N	\N
+957	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 10:57:48.977147	133	0.836175262928009	Portail_ressources_humaines
+958	comment souscrire à Futuris?	Question	2023-12-13 10:58:06.139789	134	\N	\N
+959	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:58:06.187105	134	\N	\N
+960	C'est quoi OpenHR9	Question	2023-12-13 10:58:12.375191	133	\N	\N
+961	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 10:58:12.417247	133	0.9895483255386353	avantages_définition_épargne_retraite_futuris_axa
+962	comment demander un entretien de gestion RH?	Question	2023-12-13 10:58:36.098111	134	\N	\N
+963	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:58:36.1171	134	\N	\N
+964	que permet About me ?	Question	2023-12-13 10:58:36.804964	133	\N	\N
+965	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:58:36.850059	133	\N	\N
+966	Combien on peut mettre sur l'epargne retraite ?	Question	2023-12-13 10:58:52.923888	133	\N	\N
+967	A partir de 200 MAD/mois	Response	2023-12-13 10:58:52.961116	133	0.9793202877044678	avantages_montant_versement
+968	Puis je virer mon salaire sur un compte hors BMCI?	Question	2023-12-13 10:58:56.674325	134	\N	\N
+969	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:58:56.721205	134	\N	\N
+970	Je souhaite modifier les conditions de mon assurance vie?	Question	2023-12-13 10:59:37.16632	134	\N	\N
+971	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 10:59:37.198011	134	\N	\N
+972	Quelle est la procédure en cas de décès d'un proche?	Question	2023-12-13 11:00:19.779797	134	\N	\N
+973	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:00:19.817398	134	\N	\N
+974	Merci beaucoup pour cet échange et à bientôt	Question	2023-12-13 11:00:28.000209	133	\N	\N
+975	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:00:28.055178	133	\N	\N
+976	Bonjour	Question	2023-12-13 11:00:35.307276	133	\N	\N
+977	Bonjour, comment vas-tu ?	Response	2023-12-13 11:00:35.334626	133	0.9626060128211975	salutation
+978	Bien et toi ? 	Question	2023-12-13 11:00:52.454555	133	\N	\N
+979	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:00:52.486313	133	\N	\N
+980	comment bénéficier du fonds de solidarité?	Question	2023-12-13 11:00:57.880703	134	\N	\N
+981	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:00:57.927556	134	\N	\N
+982	Hello	Question	2023-12-13 11:01:22.951717	133	\N	\N
+983	Bonjour, comment vas-tu ?	Response	2023-12-13 11:01:22.987076	133	0.958436131477356	salutation
+984	je bais bien 	Question	2023-12-13 11:01:28.401078	133	\N	\N
+986	combien peut on reporter de jour de congé	Question	2023-12-13 11:01:50.523993	132	\N	\N
+985	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:01:28.438353	133	\N	\N
+990	comment peut on reporter de jours de congé ?	Question	2023-12-13 11:02:22.206657	137	\N	\N
+991	A partir de 200 MAD/mois	Response	2023-12-13 11:02:22.234325	137	0.5465925335884094	avantages_montant_versement
+992	un café peut etre ?	Question	2023-12-13 11:02:28.156366	136	\N	\N
+993	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:02:28.20021	136	\N	\N
+994	je susi Yassine, un assistant exterieur	Question	2023-12-13 11:02:29.684225	135	\N	\N
+995	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:02:29.747101	135	\N	\N
+998	comment pouvez vous m'aider?	Question	2023-12-13 11:02:52.865456	135	\N	\N
+999	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:02:52.899208	135	\N	\N
+1000	comment souscrire ?	Question	2023-12-13 11:03:10.984074	136	\N	\N
+1001	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:03:11.014765	136	\N	\N
+1002	Bonjour	Question	2023-12-13 11:03:11.251693	135	\N	\N
+1003	Bonjour, comment vas-tu ?	Response	2023-12-13 11:03:11.281917	135	0.9626060128211975	salutation
+1004	ça va et vous?	Question	2023-12-13 11:03:17.48805	135	\N	\N
+1005	Bonjour, comment vas-tu ?	Response	2023-12-13 11:03:17.519283	135	0.5454591512680054	salutation
+1008	jour de congé	Question	2023-12-13 11:03:30.132009	136	\N	\N
+1009	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:03:30.163225	136	\N	\N
+1010	quel sont les jours ferié en 2024 V?	Question	2023-12-13 11:03:38.465666	136	\N	\N
+1011	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:03:38.505642	136	\N	\N
+1016	comment tu t'appel ?	Question	2023-12-13 11:04:31.459838	136	\N	\N
+1017	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:04:31.485264	136	\N	\N
+987	A partir de 200 MAD/mois	Response	2023-12-13 11:01:50.591934	132	0.5944327712059021	avantages_montant_versement
+988	Je veux de l'argent 	Question	2023-12-13 11:02:21.511174	136	\N	\N
+989	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:02:21.549649	136	\N	\N
+1012	c'est le nombre minimal de congé annuel	Question	2023-12-13 11:03:49.823351	135	\N	\N
+1013	A partir de 200 MAD/mois	Response	2023-12-13 11:03:49.864264	135	0.45465853810310364	avantages_montant_versement
+996	comment souscrire a futuris ?	Question	2023-12-13 11:02:48.282123	136	\N	\N
+997	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 11:02:48.324409	136	0.7336129546165466	avantages_définition_épargne_retraite_futuris_axa
+1006	3iyaan	Question	2023-12-13 11:03:19.333426	136	\N	\N
+1007	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 11:03:19.379049	136	0.9940057992935181	avantages_définition_épargne_retraite_futuris_axa
+1014	Quels sont mes portails RH ?	Question	2023-12-13 11:04:25.755728	137	\N	\N
+1015	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 11:04:25.782384	137	0.836175262928009	Portail_ressources_humaines
+1018	c'est quoi les regles rachat totl de credti	Question	2023-12-13 11:05:08.662128	135	\N	\N
+1019	1- Rachat partiel : maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat\\n2- Rachat total : Possible si\\n- l’adhérent cesse son activité à la BMCI\\n- il met fin au contrat\\nDans les deux cas voir pénalités IR et coût du rachat	Response	2023-12-13 11:05:08.701042	135	0.8653144240379333	avantages_rachat
+1020	d'accord merci	Question	2023-12-13 11:05:10.603569	136	\N	\N
+1021	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:05:10.643804	136	\N	\N
+1022	tu es gentil 	Question	2023-12-13 11:05:15.986212	136	\N	\N
+1023	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:05:16.021671	136	\N	\N
+1024	c'est quoi la procédure	Question	2023-12-13 11:05:52.597361	135	\N	\N
+1025	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:05:52.624891	135	\N	\N
+1026	comment avoir plus d'argent ?	Question	2023-12-13 11:05:54.098951	136	\N	\N
+1027	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:05:54.138273	136	\N	\N
+1028	augmentation dancienneté 	Question	2023-12-13 11:06:02.079881	136	\N	\N
+1029	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:06:02.116016	136	\N	\N
+1030	epargne 	Question	2023-12-13 11:06:06.644236	136	\N	\N
+1031	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:06:06.676402	136	\N	\N
+1032	epargne retraite ?	Question	2023-12-13 11:06:10.661857	136	\N	\N
+1033	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:06:10.696253	136	\N	\N
+1034	c'est quoi la procédure d'un rachat de credit total	Question	2023-12-13 11:06:13.268496	135	\N	\N
+1035	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:06:13.299756	135	\N	\N
+1036	est ce que je suis couverte par une assurance voyage?	Question	2023-12-13 11:06:37.378888	137	\N	\N
+1037	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:06:37.421429	137	\N	\N
+1038	c'est quoi le délai moyen pour une prise en charge médical	Question	2023-12-13 11:09:25.04253	137	\N	\N
+1039	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:09:25.100421	137	\N	\N
+1040	demission?	Question	2023-12-13 11:10:45.530639	135	\N	\N
+1041	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:10:45.565873	135	\N	\N
+1042	je veux récupérer un attestation de travail	Question	2023-12-13 11:12:24.939727	135	\N	\N
+1043	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:12:24.984155	135	\N	\N
+1044	certificat medical	Question	2023-12-13 11:12:35.160621	135	\N	\N
+1045	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:12:35.192354	135	\N	\N
+1046	certificat medical valide	Question	2023-12-13 11:12:43.488667	135	\N	\N
+1047	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:12:43.51586	135	\N	\N
+1048	quels sont les avantages du personnel	Question	2023-12-13 11:12:51.709659	142	\N	\N
+1049	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:12:51.746271	142	\N	\N
+1050	avantage sociaux	Question	2023-12-13 11:13:00.129854	135	\N	\N
+1051	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:13:00.161574	135	\N	\N
+1052	avantages sociaux	Question	2023-12-13 11:13:09.250364	135	\N	\N
+1053	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:13:09.270662	135	\N	\N
+1054	reductions 	Question	2023-12-13 11:13:21.86543	135	\N	\N
+1055	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:13:21.897813	135	\N	\N
+1056	mon compte est rémunéré jusqu'a quel plfond?	Question	2023-12-13 11:13:35.972626	142	\N	\N
+1057	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:13:36.024111	142	\N	\N
+1058	augmentation salarial	Question	2023-12-13 11:13:44.041362	135	\N	\N
+1059	Le taux minimum garanti est de 3.25% par an	Response	2023-12-13 11:13:44.056976	135	0.7744842767715454	avantages_taux_minimum_garanti
+1060	merci	Question	2023-12-13 11:13:53.873753	135	\N	\N
+1061	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:13:53.889372	135	\N	\N
+1062	age minimal pour mon pension	Question	2023-12-13 11:14:12.217495	135	\N	\N
+1063	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:14:12.249483	135	\N	\N
+1064	au bout de combien de rapple a l'ordre un collaborateur peut til etre viré?	Question	2023-12-13 11:14:48.242873	142	\N	\N
+1065	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:14:48.304095	142	\N	\N
+1066	Quels sont mes portails RH ?	Question	2023-12-13 11:15:28.907398	135	\N	\N
+1067	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 11:15:28.931105	135	0.836175262928009	Portail_ressources_humaines
+1068	J'ai droit a combien de rachat futuris	Question	2023-12-13 11:15:35.287519	142	\N	\N
+1069	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:15:35.324666	142	\N	\N
+1070	A combien est le taux de rémunération de l'epagne retraite?	Question	2023-12-13 11:16:10.748745	142	\N	\N
+1071	Il faut demander à votre attaché RH.	Response	2023-12-13 11:16:10.794361	142	0.8120457530021667	avantages_taux_de_valorisation
+1072	en tant que collaborateur a combien j'ai droit de jour de congé maladie par an?	Question	2023-12-13 11:17:18.257747	142	\N	\N
+1073	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:17:18.284292	142	\N	\N
+1074	Quels sont mes portails RH ?	Question	2023-12-13 11:17:51.402855	142	\N	\N
+1075	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-13 11:17:51.435068	142	0.836175262928009	Portail_ressources_humaines
+1076	Quel est la frequence d'un entretien de gestion de carriere	Question	2023-12-13 11:18:16.080547	142	\N	\N
+1077	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:18:16.127345	142	\N	\N
+1078	externe	Question	2023-12-13 11:18:52.684497	135	\N	\N
+1079	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:18:52.715539	135	\N	\N
+1080	assistant exterieur	Question	2023-12-13 11:19:25.05845	135	\N	\N
+1081	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:19:25.082613	135	\N	\N
+1082	personnel	Question	2023-12-13 11:19:38.365967	135	\N	\N
+1083	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:19:38.397659	135	\N	\N
+1084	Quel est delai a passer dans un poste pour etre elligible a une mobilité?	Question	2023-12-13 11:20:25.233982	142	\N	\N
+1085	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:20:25.286963	142	\N	\N
+1086	merci à l'equipe, et bon courage	Question	2023-12-13 11:20:56.87221	135	\N	\N
+1087	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:20:56.919883	135	\N	\N
+1088	combien j'ai de jours de congé	Question	2023-12-13 11:30:36.337817	143	\N	\N
+1089	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:30:36.454911	143	\N	\N
+1090	ça marche quels Sont mes avantages	Question	2023-12-13 11:31:54.686979	143	\N	\N
+1091	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:31:54.733855	143	\N	\N
+1092	avantages colllaborateurs	Question	2023-12-13 11:32:08.016643	143	\N	\N
+1093	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:32:08.063557	143	\N	\N
+1094	C'est quoi Futuris ?	Question	2023-12-13 11:32:35.196223	143	\N	\N
+1095	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 11:32:35.233479	143	0.9944528937339783	avantages_définition_épargne_retraite_futuris_axa
+1096	comment je peux bénéficier de futuris	Question	2023-12-13 11:32:53.431323	143	\N	\N
+1097	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:32:53.509599	143	\N	\N
+1098	comment faire un rachat total	Question	2023-12-13 11:33:16.419597	143	\N	\N
+1099	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:33:16.482095	143	\N	\N
+1100	epargne	Question	2023-12-13 11:36:32.840191	143	\N	\N
+1101	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:36:32.894094	143	\N	\N
+1102	Combien on peut mettre sur l'epargne retraite ?	Question	2023-12-13 11:36:42.554638	143	\N	\N
+1103	A partir de 200 MAD/mois	Response	2023-12-13 11:36:42.612093	143	0.9793202877044678	avantages_montant_versement
+1104	c'est quoi l'épargne retraite	Question	2023-12-13 11:37:03.355776	143	\N	\N
+1105	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-13 11:37:03.422474	143	0.9898309111595154	avantages_définition_épargne_retraite_futuris_axa
+1106	quand est ce que je peux être remboursé de futuris	Question	2023-12-13 11:37:59.166248	143	\N	\N
+1107	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:37:59.230591	143	\N	\N
+1108	règles rachat partiel futuris	Question	2023-12-13 11:38:45.798529	143	\N	\N
+1109	Le rachat partiel c'est maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat	Response	2023-12-13 11:38:45.853629	143	0.8697084188461304	avantages_rachat_partiel
+1110	 a quel taux je réalise mon rachat partiel futuris	Question	2023-12-13 11:39:25.287475	143	\N	\N
+1111	Le taux minimum garanti est de 3.25% par an	Response	2023-12-13 11:39:25.339276	143	0.9999685287475586	avantages_taux_minimum_garanti
+1112		Question	2023-12-13 11:39:26.426391	143	\N	\N
+1113	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:39:26.459862	143	\N	\N
+1114	regles rachat total futuris	Question	2023-12-13 11:39:48.421026	143	\N	\N
+1115	Le rachat total est possible uniquement si : - l’adhérent cesse son activité à la BMCI - il met fin au contrat	Response	2023-12-13 11:39:48.484974	143	0.8274726867675781	avantages_rachat_total
+1116	comment je met fin a mon contrat futuris	Question	2023-12-13 11:40:06.555905	143	\N	\N
+1117	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 11:40:06.617492	143	\N	\N
+1118	conditions rachat total futuris	Question	2023-12-13 11:40:53.861338	143	\N	\N
+1119	Le rachat total est possible uniquement si : - l’adhérent cesse son activité à la BMCI - il met fin au contrat	Response	2023-12-13 11:40:53.906625	143	0.5554347038269043	avantages_rachat_total
+1120	Hello	Question	2023-12-13 11:45:13.146403	143	\N	\N
+1121	Hello	Question	2023-12-13 11:45:19.534507	143	\N	\N
+1122	bonjour	Question	2023-12-13 14:07:08.547892	121	\N	\N
+1123	bonjour	Question	2023-12-13 14:23:24.622013	144	\N	\N
+1124	Bonjour, comment vas-tu ?	Response	2023-12-13 14:23:24.950055	144	0.9155781865119934	salutation
+1125	quelles sont les conventions pour les salariés ?	Question	2023-12-13 14:24:55.560114	144	\N	\N
+1126	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:24:55.621787	144	\N	\N
+1127	où puis je trouver la liste des enseignes où j'ai des réductions ?	Question	2023-12-13 14:25:21.021757	144	\N	\N
+1128	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:25:21.080026	144	\N	\N
+1129	il y a t il des réductions pour des hotels ? 	Question	2023-12-13 14:25:33.954626	144	\N	\N
+1130	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:25:34.008594	144	\N	\N
+1131	comment réserver un logement de vacances ? 	Question	2023-12-13 14:25:45.273258	144	\N	\N
+1132	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:25:45.306315	144	\N	\N
+1133	comment déposer sa démission ? 	Question	2023-12-13 14:26:10.101227	144	\N	\N
+1134	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:26:10.155558	144	\N	\N
+1135	comment se passe le passage de grade ? 	Question	2023-12-13 14:26:34.372481	144	\N	\N
+1136	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:26:34.412833	144	\N	\N
+1137	quels sont les avantages de la classe 7 ? 	Question	2023-12-13 14:26:43.645573	144	\N	\N
+1138	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:26:43.696564	144	\N	\N
+1139	comment modifier mon adresse ? 	Question	2023-12-13 14:26:57.834569	144	\N	\N
+1140	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:26:57.876836	144	\N	\N
+1141	Je me suis mariée, que dois-je faire d'un point de vue RH ? 	Question	2023-12-13 14:27:18.790241	144	\N	\N
+1142	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:27:18.830609	144	\N	\N
+1143	Est-ce que les parents peuvent bénéficier de l'assurance maladie ? 	Question	2023-12-13 14:27:36.171795	144	\N	\N
+1144	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:27:36.247573	144	\N	\N
+1145	Est-ce que les parents peuvent bénéficier de l'assitance	Question	2023-12-13 14:27:52.094317	144	\N	\N
+1146	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:27:52.126916	144	\N	\N
+1147		Question	2023-12-13 14:27:53.275447	144	\N	\N
+1148	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:27:53.319153	144	\N	\N
+1149	comment demander les documents du visa	Question	2023-12-13 14:28:02.658771	144	\N	\N
+1150	Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.	Response	2023-12-13 14:28:02.684661	144	\N	\N
+1151	combien dure le congé maternité	Question	2023-12-13 14:29:00.827705	144	\N	\N
+1152	A partir de 200 MAD/mois	Response	2023-12-13 14:29:00.878223	144	0.8544520139694214	avantages_montant_versement
+1153	bonjour	Question	2023-12-13 14:33:43.19661	144	\N	\N
+1154	bonjour	Question	2023-12-13 14:35:08.679498	144	\N	\N
+1155	hello	Question	2023-12-13 14:35:19.778827	144	\N	\N
+1156	Quels sont mes portails RH ?	Question	2023-12-13 14:36:04.517998	144	\N	\N
+1157	Quels sont mes portails RH ?	Question	2023-12-13 14:36:06.250119	144	\N	\N
+1158	Quels sont mes portails RH ?	Question	2023-12-13 14:36:06.360143	144	\N	\N
+1159	Quels sont mes portails RH ?	Question	2023-12-13 14:36:06.517139	144	\N	\N
+1160	Quels sont mes portails RH ?	Question	2023-12-13 14:40:13.30622	121	\N	\N
+1304	C'est quoi Futuris ?	Question	2023-12-19 18:25:12.776415	156	\N	\N
+1305	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-19 18:25:29.583554	156	\N	avantages_définition_épargne_retraite_futuris_axa
+1306	bonjour	Question	2023-12-20 09:47:55.16662	121	\N	\N
+1307	Bonjour, comment vas-tu ?	Response	2023-12-20 09:48:08.333478	121	\N	Bonjour
+1308	Quels sont mes portails RH ?	Question	2023-12-20 10:40:54.092642	121	\N	\N
+1309	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-20 10:41:03.3517	121	\N	Portail_ressources_humaines
+1310	est ce que bmci a une epargne retraite ?	Question	2023-12-20 10:46:00.306998	156	\N	\N
+1311	Deux possibilités lorsque le collaborateur cesse de faire partie du personnel BMCI : 1- Maintien de son compte(en attendant l’échéance normale ou anticipée) 2- Rachète ses propres cotisations revalorisées	Response	2023-12-20 10:46:09.629936	156	\N	avantages_cessation_d'activité
+1312	C'est quoi Futuris ?	Question	2023-12-20 12:14:06.133175	155	\N	\N
+1313	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-20 12:14:09.43169	155	0.8468403816223145	avantages_définition_épargne_retraite_futuris_axa
+1314	quel document pour AT	Question	2023-12-20 19:11:40.871062	156	\N	\N
+1211	Quels sont mes portails RH ?	Question	2023-12-18 15:51:59.904826	144	\N	\N
+1212	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-18 15:52:13.06728	144	\N	Portail_ressources_humaines
+1213	bonjour	Question	2023-12-18 16:09:43.626639	144	\N	\N
+1214	Bonjour, comment vas-tu ?	Response	2023-12-18 16:09:53.352629	144	\N	Bonjour
+1231	Quels sont mes portails RH ?	Question	2023-12-19 10:02:22.610479	143	\N	\N
+1232	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-19 10:02:33.666759	143	\N	Portail_ressources_humaines
+1237	Quels sont mes portails RH ?	Question	2023-12-19 10:22:12.031518	151	\N	\N
+1238	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-19 10:22:17.944458	151	\N	Portail_ressources_humaines
+1276	Hello	Question	2023-12-19 16:27:16.899117	154	\N	\N
+1277	Bonjour, comment vas-tu ?	Response	2023-12-19 16:27:24.162339	154	\N	Bonjour
+1278	C'est quoi Futuris ?	Question	2023-12-19 16:29:28.13627	144	\N	\N
+1279	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-19 16:29:35.788	144	\N	avantages_définition_épargne_retraite_futuris_axa
+1280	Quels sont mes portails RH ?	Question	2023-12-19 16:30:06.077935	155	\N	\N
+1281	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-19 16:30:13.163881	155	\N	Portail_ressources_humaines
+1282	Quels sont les avantages de la classe 7 	Question	2023-12-19 16:31:20.582601	155	\N	\N
+1283	Possibilité de bénéficier de jours supplémentaires en prenant un congé en dehors de la période des vacances scolaires, sous réserve de consommer en une seule fois la moitié de ses droits de congé annuels durant les mois concernés par la majoration. 	Response	2023-12-19 16:31:26.568379	155	\N	congé_majoration_conditions
+1284	comment deposer ma demission	Question	2023-12-19 16:32:09.452998	155	\N	\N
+1285	Transmettre à son conseiller administratif RH une demande manuscrite en exprimant son besoin et expliquant les motifs de ce départ provisoire.  Il doit également, accompagner sa demande par des justificatifs probants justifiant son souhait. 	Response	2023-12-19 16:32:14.547023	155	\N	mise_en_disponibilité_SS_demande
+1286	C'est quoi Futuris ?	Question	2023-12-19 16:32:55.780356	144	\N	\N
+1287	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-19 16:33:00.379809	144	\N	avantages_définition_épargne_retraite_futuris_axa
+1288	Quel est l'age de la retraite	Question	2023-12-19 16:36:51.17943	155	\N	\N
+1289	Le cinquième jour ouvrable qui suit la date d’encaissement par la compagnie AXA.	Response	2023-12-19 16:37:01.616024	155	\N	avantages_date_valeur_valorisation
+1290	Je suis enceinte 	Question	2023-12-19 16:37:57.324425	155	\N	\N
+1291	Le congé prénatal s’étale de la date mentionnée dans le certificat de 7 mois et demi de grossesse jusqu’à la date d’accouchement. La durée totale du congé prénatal est majorée à 45 jours. \n	Response	2023-12-19 16:38:03.980688	155	\N	Matérnité_congé_prénatal
+1292	Comment constituer le dossier de maternité	Question	2023-12-19 16:39:34.431258	155	\N	\N
+1293	*3 extraits de naissance  *l’accusé de réception relatif au dépôt des IJM maternité auprès de la CNSS. \n	Response	2023-12-19 16:39:40.652081	155	\N	Matérnité_documents_accouchement
+1294	Je veux déclarer que je suis enceinte 	Question	2023-12-19 16:43:47.277555	155	\N	\N
+1295	La collaboratrice doit transmettre à son conseiller administratif son certificat de grossesse de 7 mois et demi qui matérialise sa demande par une lettre d’acceptation d’un congé prénatal contenant les démarches nécessaires à accomplir après l’accouchement.\n	Response	2023-12-19 16:43:53.27465	155	\N	Matérnité_congé_prénatal_procédure
+1296	comment valoriser mon parcours	Question	2023-12-19 16:46:30.644983	155	\N	\N
+1297	Le collaborateur doit transmettre à son conseiller administratif une copie des cachets de sortie et d’entrée de son passeport après son retour, qui se chargera de vérifier conditions d’éligibilité et de convertir les 12 jours ouvrables, du congé annuel pris, en congé pélerinage. 	Response	2023-12-19 16:46:37.816275	155	\N	congé_pélerinage_procédure
+1298	quel document pour AT	Question	2023-12-19 16:48:04.791624	156	\N	\N
+1299	Le collaborateur victime d’un accident de travail doit adresser au service administratif : \n. Par mail : \n-> Le certificat de constatation, indiquant son état, les blessures subis ainsi que les soins nécessaires et la durée de l’arrêt de travail (ITT) S'il y a lieu.\n. Par courrier : \n-> L’original du certificat de constatation  en double  exemplaire,\n-> Copie carte CIN de la victime, \n-> Déclaration sur l’honneur de la victime légalisée, précisant les causes et les circonstances de l’accident,\n-> Prescription et ordonnances  ( médicaments, radios, séances  de rééducation…..),\n-> Facture, prospectus, et vignettes de médicaments achetés. \n Le collaborateur victime d’un accident de travail doit adresser au service administratif, en complément du dossier AT initial :\n-> 2 déclarations de témoignage signées et légalisées par les témoins, précisant : le lieu, la date, l’heure et les circonstances du sinistre.\n -> Copie de CIN des deux témoins.\n Le collaborateur victime d’un accident de travail doit adresser au service administratif, en complément du dossier AT initial :\n-> Récépissé du dépôt de plainte auprès des autorités locales;\n-> PV de police\nNB: les accidents sanctionnés par constat amiable ne sont pas pris en considération. Toutefois, si à la suite d’un accident de circulation ayant fait l’objet d’un constat amiable, la victime ressent, plus tard , des douleurs, il lui appartient de demander, par lettre contre accusée de réception, au procureur du roi du tribunal de 1 ère instance dont dépend le lieu de l’accident, l’établissement d’un procès-verbal.\n Le collaborateur victime d’un accident de travail doit adresser au service administratif, en complément du dossier AT initial :\n-> Lettre déclarative précisant la date, le lieu, et les circonstances de l’accident,\n-> Certificats médicaux en double exemplaire,\n-> Ordre de mission lié au déplacement,\n-> PV de la police si l’accident au moment de circulation est pendant le déplacement.\n\n	Response	2023-12-19 16:48:11.246488	156	\N	Accident_de_travail_documents
+1300	C'est quoi Futuris ?	Question	2023-12-19 16:48:47.422874	156	\N	\N
+1301	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-19 16:48:53.709019	156	\N	avantages_définition_épargne_retraite_futuris_axa
+1315	Le collaborateur victime d’un accident de travail doit adresser au service administratif : \n. Par mail : \n-> Le certificat de constatation, indiquant son état, les blessures subis ainsi que les soins nécessaires et la durée de l’arrêt de travail (ITT) S'il y a lieu.\n. Par courrier : \n-> L’original du certificat de constatation  en double  exemplaire,\n-> Copie carte CIN de la victime, \n-> Déclaration sur l’honneur de la victime légalisée, précisant les causes et les circonstances de l’accident,\n-> Prescription et ordonnances  ( médicaments, radios, séances  de rééducation…..),\n-> Facture, prospectus, et vignettes de médicaments achetés. \n Le collaborateur victime d’un accident de travail doit adresser au service administratif, en complément du dossier AT initial :\n-> 2 déclarations de témoignage signées et légalisées par les témoins, précisant : le lieu, la date, l’heure et les circonstances du sinistre.\n -> Copie de CIN des deux témoins.\n Le collaborateur victime d’un accident de travail doit adresser au service administratif, en complément du dossier AT initial :\n-> Récépissé du dépôt de plainte auprès des autorités locales;\n-> PV de police\nNB: les accidents sanctionnés par constat amiable ne sont pas pris en considération. Toutefois, si à la suite d’un accident de circulation ayant fait l’objet d’un constat amiable, la victime ressent, plus tard , des douleurs, il lui appartient de demander, par lettre contre accusée de réception, au procureur du roi du tribunal de 1 ère instance dont dépend le lieu de l’accident, l’établissement d’un procès-verbal.\n Le collaborateur victime d’un accident de travail doit adresser au service administratif, en complément du dossier AT initial :\n-> Lettre déclarative précisant la date, le lieu, et les circonstances de l’accident,\n-> Certificats médicaux en double exemplaire,\n-> Ordre de mission lié au déplacement,\n-> PV de la police si l’accident au moment de circulation est pendant le déplacement.\n\n	Response	2023-12-20 19:11:43.085897	156	0.5492304563522339	Accident_de_travail_documents
+1316	C'est quoi Futuris ?	Question	2023-12-20 19:11:51.200332	156	\N	\N
+1317	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-20 19:11:51.675501	156	0.8468403816223145	avantages_définition_épargne_retraite_futuris_axa
+1318	Quels sont mes portails RH ?	Question	2023-12-20 19:11:54.84166	156	\N	\N
+1319	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-20 19:11:55.435008	156	0.674771785736084	Portail_ressources_humaines
+1320	c'est quoi un rachat total ?	Question	2023-12-20 19:12:16.687621	156	\N	\N
+1321	Le rachat partiel c'est maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat	Response	2023-12-20 19:12:17.119959	156	0.5993900895118713	avantages_rachat_partiel
+1322	les regles de rachat total ?	Question	2023-12-20 19:12:34.053995	156	\N	\N
+1323	Le rachat total est possible uniquement si : - l’adhérent cesse son activité à la BMCI - il met fin au contrat	Response	2023-12-20 19:12:34.556388	156	0.7454996705055237	avantages_rachat_total
+1324	c'est quoi un rachat total ?	Question	2023-12-20 19:14:12.037209	156	\N	\N
+1325	Le rachat partiel c'est maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat	Response	2023-12-20 19:14:12.491888	156	0.5993900895118713	avantages_rachat_partiel
+1326	c'est quoi un rachat total ?	Question	2023-12-20 19:20:34.039718	156	\N	\N
+1327	Le rachat partiel c'est maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat	Response	2023-12-20 19:20:34.766832	156	0.5993900895118713	avantages_rachat_partiel
+1328	c'est quoi un rachat total ?	Question	2023-12-20 19:25:43.94816	156	\N	\N
+1329	Le rachat total est possible uniquement si : - l’adhérent cesse son activité à la BMCI - il met fin au contrat	Response	2023-12-20 19:25:44.659931	156	0.7486816644668579	avantages_rachat_total
+1330	c'est un quoi un rachat ?	Question	2023-12-20 19:25:55.922206	156	\N	\N
+1331	1- Rachat partiel : maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat\\n2- Rachat total : Possible si\\n- l’adhérent cesse son activité à la BMCI\\n- il met fin au contrat\\nDans les deux cas voir pénalités IR et coût du rachat	Response	2023-12-20 19:25:56.367363	156	0.7041023969650269	avantages_rachat
+1332	c'est un quoi un rachat ?	Question	2023-12-20 19:29:45.078664	156	\N	\N
+1333	1- Rachat partiel : maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat \n2- Rachat total : Possible si \n- l’adhérent cesse son activité à la BMCI \n- il met fin au contrat \nDans les deux cas voir pénalités IR et coût du rachat	Response	2023-12-20 19:29:45.550278	156	0.7041023969650269	avantages_rachat
+1334	bonjour	Question	2023-12-20 19:32:13.944206	153	\N	\N
+1335	Bonjour, comment vas-tu ?	Response	2023-12-20 19:32:14.298075	153	0.9605147242546082	Bonjour
+1336	je suis une femme enceinte c'est quoi la procedure ?	Question	2023-12-20 19:34:29.606301	153	\N	\N
+1337	La collaboratrice doit transmettre à son conseiller administratif son certificat de grossesse de 7 mois et demi qui matérialise sa demande par une lettre d’acceptation d’un congé prénatal contenant les démarches nécessaires à accomplir après l’accouchement.\n	Response	2023-12-20 19:34:30.046822	153	0.7027796506881714	Matérnité_congé_prénatal_procédure
+1338	j'ai un accouchement c'est quoi les document que je dois preparer ?	Question	2023-12-20 19:45:37.892833	153	\N	\N
+1339	*3 extraits de naissance  *l’accusé de réception relatif au dépôt des IJM maternité auprès de la CNSS. \n	Response	2023-12-20 19:45:38.455572	153	0.7778488397598267	Matérnité_documents_accouchement
+1340	j'ai un accouchement c'est quoi la procedure ? 	Question	2023-12-20 19:46:35.473572	153	\N	\N
+1341	La collaboratrice doit transmettre à son conseiller administratif son certificat de grossesse de 7 mois et demi qui matérialise sa demande par une lettre d’acceptation d’un congé prénatal contenant les démarches nécessaires à accomplir après l’accouchement.\n	Response	2023-12-20 19:46:35.951937	153	0.6649724245071411	Matérnité_congé_prénatal_procédure
+1342	je recevrai toujours un salaire pendant la periode de maternité ? 	Question	2023-12-20 19:48:29.563121	153	\N	\N
+1343	Conformément à la convention collective, les collaboratrices en état de grossesse bénéficieront durant leurs congé prénatal et post -natal du plein traitement du salaire à condition que celles-ci déposent  une demande des indemnités journalière de maternité auprès de la CNSS. \nLe conseiller administratif effectue un suivi régulier de la perception des IJM. Une fois que les IJM sont encaissées par la collaboratrice, la banque débite le montant correspondant. A défaut, la banque récupère automatiquement le montant équivalent aux IJM, après une période de 3 mois à compter de la date d’interruption de travail. En cas de non-respect du dépôt de la demande d’indemnités auprès de la CNSS, la collaboratrice peut être débitée si la banque ne récupère pas l’équivalent des indemnités liées au congé maternité.  	Response	2023-12-20 19:48:30.103634	153	0.7121367454528809	Matérnité_traitement_salaire
+1354	Je suis enceinte	Question	2023-12-20 20:37:25.887519	159	\N	\N
+1355	Le congé prénatal s’étale de la date mentionnée dans le certificat de 7 mois et demi de grossesse jusqu’à la date d’accouchement. La durée totale du congé prénatal est majorée à 45 jours. \n	Response	2023-12-20 20:37:26.35126	159	0.5566812753677368	Matérnité_congé_prénatal
+1356	combien dure le congé maternité	Question	2023-12-20 20:38:18.494128	159	\N	\N
+1357	. demande de prolongation manuscrite\n. certificat d’allaitement émanent du gynécologue ou du pédiatre.  \n. L'accord est matérialisé par une lettre établie par le conseiller administratif, précisant la durée et la date de reprise.\n	Response	2023-12-20 20:38:19.067434	159	0.7583223581314087	Matérnité_congé_prolongation_documents
+1358	combien dure le congé maternité	Question	2023-12-20 20:50:22.513524	159	\N	\N
+1359	. demande de prolongation manuscrite\n. certificat d’allaitement émanent du gynécologue ou du pédiatre.  \n. L'accord est matérialisé par une lettre établie par le conseiller administratif, précisant la durée et la date de reprise.\n	Response	2023-12-20 20:50:23.082833	159	0.7583223581314087	Matérnité_congé_prolongation_documents
+1360	prendre un congé en dehors de la saison ?	Question	2023-12-21 08:59:19.428946	159	\N	\N
+1361	Selon l'article 62 de la convention collective : \n-> Février 4 jours; \n-> Mars 3 jours;  \n-> Avril 2 jours; \n-> Mai 1 jour; \n-> Octobre 2 jours; \n-> Novembre 3 jours;  \n-> Décembre 4 jours 	Response	2023-12-21 08:59:19.713159	159	0.6519206762313843	congé_majoration_droits
+1362	prendre un congé en dehors de la saison ?	Question	2023-12-21 09:03:40.895304	159	\N	\N
+1363	Selon l'article 62 de la convention collective : \n-> Février 4 jours; \n-> Mars 3 jours;  \n-> Avril 2 jours; \n-> Mai 1 jour; \n-> Octobre 2 jours; \n-> Novembre 3 jours;  \n-> Décembre 4 jours 	Response	2023-12-21 09:03:41.153968	159	0.6519206762313843	congé_majoration_droits
+1364	C'est quoi Futuris ?	Question	2023-12-21 09:04:04.628784	159	\N	\N
+1365	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-21 09:04:04.840381	159	0.9999998807907104	avantages_définition_épargne_retraite_futuris_axa
+1366	C'est quoi Futuris ?	Question	2023-12-21 09:16:09.007132	159	\N	\N
+1367	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-21 09:16:09.429857	159	0.9999998807907104	avantages_définition_épargne_retraite_futuris_axa
+1368	prendre un congé en dehors de la saison ?	Question	2023-12-21 09:16:24.435028	159	\N	\N
+1369	Selon l'article 62 de la convention collective : \n-> Février 4 jours; \n-> Mars 3 jours;  \n-> Avril 2 jours; \n-> Mai 1 jour; \n-> Octobre 2 jours; \n-> Novembre 3 jours;  \n-> Décembre 4 jours 	Response	2023-12-21 09:16:25.011221	159	0.6519206762313843	congé_majoration_droits
+1370	c'est un quoi un rachat ?	Question	2023-12-21 10:12:01.893774	156	\N	\N
+1371	1- Rachat partiel : maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat \n2- Rachat total possible si : \n- l’adhérent cesse son activité à la BMCI \n- il met fin au contrat \nDans les deux cas voir pénalités IR et coût du rachat	Response	2023-12-21 10:12:02.998985	156	0.7041023969650269	avantages_rachat
+1372	Quels sont mes portails RH ?	Question	2023-12-21 10:38:47.108519	156	\N	\N
+1373	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-21 10:38:47.542504	156	0.7309906482696533	Portail_ressources_humaines
+1374	C'est quoi Futuris ?	Question	2023-12-21 10:39:20.850075	156	\N	\N
+1375	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-21 10:39:21.279625	156	0.9999998807907104	avantages_définition_épargne_retraite_futuris_axa
+1376	Quels sont mes portails RH ?	Question	2023-12-21 10:39:36.538408	160	\N	\N
+1377	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-21 10:39:36.952742	160	0.7309906482696533	Portail_ressources_humaines
+1378	Combien on peut mettre sur l'epargne retraite ?	Question	2023-12-21 10:39:51.861316	160	\N	\N
+1379	A partir de 200 MAD/mois	Response	2023-12-21 10:39:52.412778	160	0.9706348180770874	avantages_montant_versement
+1380	Quels sont mes portails RH ?	Question	2023-12-21 11:59:06.652683	159	\N	\N
+1381	Il existe deux portails pour les ressources humaines :  <a class="font-medium text-blue-600  hover:underline" href="https://aboutme.group.echonet">About Me</a> et  <a class="font-medium text-blue-600  hover:underline" href="https://prohras9.rb.echonet/hra-space/portal">OpenHR9</a>. Pour y accéder il faut être connecté sur votre poste de travail interne BMCI	Response	2023-12-21 11:59:07.453885	159	0.7309906482696533	Portail_ressources_humaines
+1382	Qu’est qu’une mise en disponibilité sans solde?	Question	2023-12-21 13:46:04.233521	160	\N	\N
+1383	La mise en disponibilité sans solde est un congé par lequel le collaborateur sollicite la suspension provisoire de son contrat pour des raisons multiples (enfant ou ascendant gravement malade, regroupement familiale , étude …), suivant le bulletin médical et sous réserve des vérifications d’usage.  Elle est assimilée à un départ définitif nécessitant la liquidation des droits au congé après réajustement et l’arrêté de la paie. Toutefois, le collaborateur est maintenu sans solde dans l’effectif et sera affecté à la DRH.     	Response	2023-12-21 13:46:04.545935	160	0.9999998807907104	mise_en_disponibilité_SS_définition
+1384	j'ai epuise mon solde congé et je veux avoir un congé 	Question	2023-12-21 14:15:32.295536	160	\N	\N
+1385	bonjour	Question	2023-12-21 14:15:50.729258	160	\N	\N
+1386	Bonjour, comment vas-tu ?	Response	2023-12-21 14:15:50.876339	160	0.9605147242546082	Bonjour
+1387	j'ai epuise mon solde congé et je veux avoir un congé 	Question	2023-12-21 14:46:15.196794	160	\N	\N
+1388	c'est quoi futuris ?	Question	2023-12-21 14:50:40.388725	160	\N	\N
+1389	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-21 14:50:40.608933	160	0.930418074131012	avantages_définition_épargne_retraite_futuris_axa
+1390	C'est quoi Futuris ?	Question	2023-12-22 14:06:42.101467	160	\N	\N
+1391	C'est quoi Futuris ?	Question	2023-12-22 14:06:44.635507	160	\N	\N
+1392	C'est quoi Futuris ?	Question	2023-12-22 14:08:27.166746	160	\N	\N
+1393	C’est une solution d’épargne retraite AXA non obligatoire qui vous permet de constituer progressivement un capital retraite.	Response	2023-12-22 14:08:28.99861	160	0.9999998807907104	avantages_définition_épargne_retraite_futuris_axa
+1394	c'est quoi un rachat	Question	2023-12-22 16:45:56.846272	160	\N	\N
+1395	Le rachat partiel c'est maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat; 1- Rachat partiel : maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat \n2- Rachat total possible si : \n- l’adhérent cesse son activité à la BMCI \n- il met fin au contrat \nDans les deux cas voir pénalités IR et coût du rachat; Le rachat total est possible uniquement si : - l’adhérent cesse son activité à la BMCI - il met fin au contrat	Responsemultiple	2023-12-22 16:45:57.512982	160	0.7041202783584595; 0.7019035816192627; 0.6592459678649902	avantages_rachat_partiel; avantages_rachat; avantages_rachat_total
+1396	Le rachat partiel c'est maximum 50% de l’épargne gérée et pas plus de quatre fois dans la vie d’un contrat	Response	2023-12-22 16:45:57.529608	160	0.7041202783584595	avantages_rachat_partiel
+\.
+
+
+--
+-- TOC entry 4867 (class 0 OID 16595)
+-- Dependencies: 220
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (id, password, username) FROM stdin;
+1	123456	mehdi
+2	sword	e06932
+\.
+
+
+--
+-- TOC entry 4879 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: conversations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.conversations_id_seq', 160, true);
+
+
+--
+-- TOC entry 4880 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: intent_response_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.intent_response_id_seq', 87, true);
+
+
+--
+-- TOC entry 4881 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.messages_id_seq', 1396, true);
+
+
+--
+-- TOC entry 4882 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 3, true);
+
+
+--
+-- TOC entry 4708 (class 2606 OID 16584)
+-- Name: conversations conversations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conversations
+    ADD CONSTRAINT conversations_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4716 (class 2606 OID 24739)
+-- Name: intent_response intent_response_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.intent_response
+    ADD CONSTRAINT intent_response_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4710 (class 2606 OID 16593)
+-- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.messages
+    ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4712 (class 2606 OID 16604)
+-- Name: users uk_r43af9ap4edm43mmtq01oddj6; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT uk_r43af9ap4edm43mmtq01oddj6 UNIQUE (username);
+
+
+--
+-- TOC entry 4714 (class 2606 OID 16602)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4717 (class 2606 OID 16605)
+-- Name: conversations fkpltqvfcbkql9svdqwh0hw4g1d; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.conversations
+    ADD CONSTRAINT fkpltqvfcbkql9svdqwh0hw4g1d FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- TOC entry 4718 (class 2606 OID 16610)
+-- Name: messages fkt492th6wsovh1nush5yl5jj8e; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.messages
+    ADD CONSTRAINT fkt492th6wsovh1nush5yl5jj8e FOREIGN KEY (conversation_id) REFERENCES public.conversations(id);
+
+
+-- Completed on 2023-12-25 11:43:49
+
+--
+-- PostgreSQL database dump complete
+--
+

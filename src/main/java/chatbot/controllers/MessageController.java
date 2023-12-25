@@ -80,29 +80,42 @@ public class MessageController {
                 JsonNode flaskResponse = objectMapper.readTree(responseEntity.getBody());
                 JsonNode intents = flaskResponse.get("intents");
 
-                // Check if there are at least two intents to compare
                 if (intents.size() > 1) {
                     double firstIntentConfidence = intents.get(0).get("confidence").asDouble();
                     double secondIntentConfidence = intents.get(1).get("confidence").asDouble();
 
-                    // Check if the difference in confidence is greater than 0.5
                     if (firstIntentConfidence - secondIntentConfidence < 0.05) {
-                        // Return the top three intents as JSON
-                        // Query the database for the top intents and return their responses
-                        ArrayNode responses = objectMapper.createArrayNode();
+                        StringBuilder intentNames = new StringBuilder();
+                        StringBuilder responseTexts = new StringBuilder();
+                        StringBuilder confidences = new StringBuilder();
+
                         for (int i = 0; i < Math.min(3, intents.size()); i++) {
                             String intentName = intents.get(i).get("intent").asText();
+                            double confidence = intents.get(i).get("confidence").asDouble();
                             IntentResponse intentResponse = intentResponseRepository.findByIntentName(intentName);
+
                             if (intentResponse != null) {
-                                ObjectNode responseInfo = objectMapper.createObjectNode();
-                                responseInfo.put("intent", intentName);
-                                responseInfo.put("response", intentResponse.getResponseText());
-                                responses.add(responseInfo);
+                                if (i > 0) {
+                                    intentNames.append("; ");
+                                    responseTexts.append("; ");
+                                    confidences.append("; ");
+                                }
+                                intentNames.append(intentName);
+                                responseTexts.append(intentResponse.getResponseText());
+                                confidences.append(confidence);
                             }
                         }
-                        return ResponseEntity.ok().body(responses.toString());
+
+                        Message message = new Message();
+                        message.setContent(responseTexts.toString());
+                        message.setIntentName(intentNames.toString());
+                        message.setConfidence(confidences.toString());
+                        message.setMessageType("Responsemultiple");
+                        message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
+                        messageRepository.save(message);
                     }
                 }
+
 
                 String intent = flaskResponse.get("intents").get(0).get("intent").asText();
                 System.out.println("Intent: " + intent);    // Print the intent
