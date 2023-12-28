@@ -74,74 +74,80 @@ public class MessageController {
 
 // Print the response status code
 
+if (responseEntity.getStatusCode().is2xxSuccessful()) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonNode flaskResponse = objectMapper.readTree(responseEntity.getBody());
+    JsonNode intents = flaskResponse.get("intents");
 
-            if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode flaskResponse = objectMapper.readTree(responseEntity.getBody());
-                JsonNode intents = flaskResponse.get("intents");
+    boolean closeConfidence = false; // Flag to check if confidence levels are close
 
-                if (intents.size() > 1) {
-                    double firstIntentConfidence = intents.get(0).get("confidence").asDouble();
-                    double secondIntentConfidence = intents.get(1).get("confidence").asDouble();
+    if (intents.size() > 1) {
+        double firstIntentConfidence = intents.get(0).get("confidence").asDouble();
+        double secondIntentConfidence = intents.get(1).get("confidence").asDouble();
 
-                    if (firstIntentConfidence - secondIntentConfidence < 0.05) {
-                        StringBuilder intentNames = new StringBuilder();
-                        StringBuilder responseTexts = new StringBuilder();
-                        StringBuilder confidences = new StringBuilder();
+        if (firstIntentConfidence - secondIntentConfidence < 0.08) {
+            closeConfidence = true; // Set flag to true if confidences are close
 
-                        for (int i = 0; i < Math.min(3, intents.size()); i++) {
-                            String intentName = intents.get(i).get("intent").asText();
-                            double confidence = intents.get(i).get("confidence").asDouble();
-                            IntentResponse intentResponse = intentResponseRepository.findByIntentName(intentName);
+            StringBuilder intentNames = new StringBuilder();
+            StringBuilder responseTexts = new StringBuilder();
+            StringBuilder confidences = new StringBuilder();
 
-                            if (intentResponse != null) {
-                                if (i > 0) {
-                                    intentNames.append("; ");
-                                    responseTexts.append("; ");
-                                    confidences.append("; ");
-                                }
-                                intentNames.append(intentName);
-                                responseTexts.append(intentResponse.getResponseText());
-                                confidences.append(confidence);
-                            }
-                        }
+            for (int i = 0; i < Math.min(3, intents.size()); i++) {
+                String intentName = intents.get(i).get("intent").asText();
+                double confidence = intents.get(i).get("confidence").asDouble();
+                IntentResponse intentResponse = intentResponseRepository.findByIntentName(intentName);
 
-                        Message message = new Message();
-                        message.setContent(responseTexts.toString());
-                        message.setIntentName(intentNames.toString());
-                        message.setConfidence(confidences.toString());
-                        message.setMessageType("Responsemultiple");
-                        message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
-                        messageRepository.save(message);
-                    }
-                }
-
-
-                String intent = flaskResponse.get("intents").get(0).get("intent").asText();
-                System.out.println("Intent: " + intent);    // Print the intent
-
-                IntentResponse intentResponse = intentResponseRepository.findByIntentName(intent);
                 if (intentResponse != null) {
-                    Message message = new Message();
-                    message.setContent(intentResponse.getResponseText());
-                    message.setIntentName(intent);
-                    message.setConfidence(flaskResponse.get("intents").get(0).get("confidence").asText());
-                    message.setMessageType("Response");
-                    message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
-                    messageRepository.save(message);
-                    // Handle the response as needed
-                    return ResponseEntity.ok(String.valueOf(message.getId()));
-                } else {
-                    // Handle the case where there's no matching response
-                    Message message = new Message();
-                    message.setContent("Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.");
-                    // Set other properties like messageType, conversation, etc., as needed
-
-                    message.setMessageType("Response");
-                    message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
-                    messageRepository.save(message);
-                    return ResponseEntity.ok().body("No response found for intent: " + intent);
+                    if (i > 0) {
+                        intentNames.append("; ");
+                        responseTexts.append("; ");
+                        confidences.append("; ");
+                    }
+                    intentNames.append(intentName);
+                    responseTexts.append(intentResponse.getResponseText());
+                    confidences.append(confidence);
                 }
+            }
+
+            Message message = new Message();
+            message.setContent(responseTexts.toString());
+            message.setIntentName(intentNames.toString());
+            message.setConfidence(confidences.toString());
+            message.setMessageType("Responsemultiple");
+            message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
+            messageRepository.save(message);
+        }
+    }
+
+    // Proceed with this block only if closeConfidence is false
+    if (!closeConfidence) {
+        String intent = flaskResponse.get("intents").get(0).get("intent").asText();
+        System.out.println("Intent: " + intent); // Print the intent
+
+        IntentResponse intentResponse = intentResponseRepository.findByIntentName(intent);
+        if (intentResponse != null) {
+            Message message = new Message();
+            message.setContent(intentResponse.getResponseText());
+            message.setIntentName(intent);
+            message.setConfidence(flaskResponse.get("intents").get(0).get("confidence").asText());
+            message.setMessageType("Response");
+            message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
+            messageRepository.save(message);
+            return ResponseEntity.ok(String.valueOf(message.getId()));
+        } else {
+            // Handle the case where there's no matching response
+            Message message = new Message();
+            message.setContent("Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.");
+            // Set other properties like messageType, conversation, etc., as needed
+
+            message.setMessageType("Response");
+            message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
+            messageRepository.save(message);
+            return ResponseEntity.ok().body("No response found for intent: " + intent);
+        }
+    }
+
+
             } else {
                 // Handle non-successful response (e.g., 4xx or 5xx status code)
                 return ResponseEntity.status(responseEntity.getStatusCode()).body(null);
@@ -150,5 +156,6 @@ public class MessageController {
             // Handle any exceptions, e.g., Conversation not found
             return ResponseEntity.badRequest().body(null);
         }
+        return null;
     }
 }

@@ -25,6 +25,7 @@ public class ConversationController {
         try {
             // Call the service method to create a conversation with the specified user_id and title
             Conversation conversation = conversationService.createConversation(userId);
+            
 
             // Return the created conversation with a 201 Created status
             List<Conversation> conversations = conversationService.getAllConversationsByUserId(userId);
