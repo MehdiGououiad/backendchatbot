@@ -85,7 +85,7 @@ if (responseEntity.getStatusCode().is2xxSuccessful()) {
         double firstIntentConfidence = intents.get(0).get("confidence").asDouble();
         double secondIntentConfidence = intents.get(1).get("confidence").asDouble();
 
-        if (firstIntentConfidence - secondIntentConfidence < 0.08) {
+        if (firstIntentConfidence - secondIntentConfidence < 0.03) {
             closeConfidence = true; // Set flag to true if confidences are close
 
             StringBuilder intentNames = new StringBuilder();
