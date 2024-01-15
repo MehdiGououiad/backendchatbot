@@ -50,7 +50,50 @@ public class MessageController {
     }
 
     @PostMapping("/ask")
-    public ResponseEntity<String> askQuestion(@RequestParam String question, @RequestParam Long conversationId) {
+    public ResponseEntity<String> askQuestion(@RequestParam String question, @RequestParam Long conversationId, @RequestParam String version) {
+        if(version.equals("2")) {
+            try {
+                messageService.saveQuestionFromUser(question, conversationId);
+                  // Define the API URL
+    String apiUrl = "http://localhost:8000/query";
+
+    // Define the JSON payload
+    String jsonPayload = "{\"text\":\"" + question + "\"}";
+
+    // Set headers
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+
+    // Create an HTTP entity with the JSON payload and headers
+    HttpEntity<String> requestEntity = new HttpEntity<>(jsonPayload, headers);
+
+    // Create a RestTemplate instance
+    RestTemplate restTemplate = new RestTemplate();
+
+    // Send the POST request
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiUrl, requestEntity, String.class);
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonNode llmResponse = objectMapper.readTree(responseEntity.getBody());
+    JsonNode response = llmResponse.get("response");
+
+    Message message = new Message();
+    String modifiedResponse = response.toString().replace("\"", "");
+
+// Set the modified response as the content of the message
+message.setContent(modifiedResponse);
+    message.setMessageType("ResponseGenerative");
+    message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
+    messageRepository.save(message);
+    return ResponseEntity.ok(String.valueOf(message.getId()));
+
+
+        }
+     catch (Exception e) {
+        // Handle any exceptions, e.g., Conversation not found
+        return ResponseEntity.badRequest().body(null);
+    }
+}
+else{
         try {
             messageService.saveQuestionFromUser(question, conversationId);
 
@@ -157,5 +200,6 @@ if (responseEntity.getStatusCode().is2xxSuccessful()) {
             return ResponseEntity.badRequest().body(null);
         }
         return null;
+    }
     }
 }
