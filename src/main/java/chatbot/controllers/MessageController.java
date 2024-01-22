@@ -25,181 +25,154 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/api/questions")
 public class MessageController {
 
     private final MessageService messageService;
-    private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-
     private final IntentResponseRepository intentResponseRepository;
     private final MessageRepository messageRepository;
     private final ConversationRepository conversationRepository;
 
-
     public MessageController(MessageService messageService, ObjectMapper objectMapper, IntentResponseRepository intentResponseRepository, MessageRepository messageRepository, ConversationRepository conversationRepository) {
         this.messageService = messageService;
+        this.objectMapper = objectMapper;
         this.intentResponseRepository = intentResponseRepository;
         this.messageRepository = messageRepository;
         this.conversationRepository = conversationRepository;
-        this.objectMapper = new ObjectMapper();
-        this.restTemplate = new RestTemplate();
-
     }
 
     @PostMapping("/ask")
     public ResponseEntity<String> askQuestion(@RequestParam String question, @RequestParam Long conversationId, @RequestParam String version) {
-        if(version.equals("2")) {
-            try {
-                messageService.saveQuestionFromUser(question, conversationId);
-                  // Define the API URL
-    String apiUrl = "http://localhost:8000/query";
-
-    // Define the JSON payload
-    String jsonPayload = "{\"text\":\"" + question + "\"}";
-
-    // Set headers
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-
-    // Create an HTTP entity with the JSON payload and headers
-    HttpEntity<String> requestEntity = new HttpEntity<>(jsonPayload, headers);
-
-    // Create a RestTemplate instance
-    RestTemplate restTemplate = new RestTemplate();
-
-    // Send the POST request
-    ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiUrl, requestEntity, String.class);
-    ObjectMapper objectMapper = new ObjectMapper();
-    JsonNode llmResponse = objectMapper.readTree(responseEntity.getBody());
-    JsonNode response = llmResponse.get("response");
-
-    Message message = new Message();
-    String modifiedResponse = response.toString().replace("\"", "");
-
-// Set the modified response as the content of the message
-message.setContent(modifiedResponse);
-    message.setMessageType("ResponseGenerative");
-    message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
-    messageRepository.save(message);
-    return ResponseEntity.ok(String.valueOf(message.getId()));
-
-
-        }
-     catch (Exception e) {
-        // Handle any exceptions, e.g., Conversation not found
-        return ResponseEntity.badRequest().body(null);
-    }
-}
-else{
         try {
             messageService.saveQuestionFromUser(question, conversationId);
 
+            if ("2".equals(version)) {
+                return handleVersion2(question, conversationId);
+            } else {
+                return handleVersion1(question, conversationId);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 
-            // Your Flask API URL (update the IP address and port as needed)
-            String flaskApiUrl = "http://localhost:5000/get_intent";
+    private ResponseEntity<String> handleVersion1(String question, Long conversationId) throws Exception {
+        // Logic for version 1
+        String flaskApiUrl = "http://localhost:5000/get_intent";
+        String completeUrl = flaskApiUrl + "?sentence=" + question;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-// No encoding is applied to the sentence
-            String completeUrl = flaskApiUrl + "?sentence=" + question;
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(completeUrl, String.class, requestEntity);
 
-// Set headers to indicate JSON content type with UTF-8 encoding
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            JsonNode flaskResponse = objectMapper.readTree(responseEntity.getBody());
+            return processFlaskResponse(flaskResponse, conversationId);
+        } else {
+            // Handle non-successful response
+            return ResponseEntity.status(responseEntity.getStatusCode()).body("Error: Non-successful response from Flask API");
+        }
+    }
 
-// Create an HttpEntity with headers (no request body needed for GET request)
-            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+    private ResponseEntity<String> handleVersion2(String question, Long conversationId) throws Exception {
+        // Logic for version 2
+        String apiUrl = "http://localhost:8000/query";
+        String jsonPayload = "{\"text\":\"" + question + "\"}";
 
-// Use RestTemplate to send the GET request
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(completeUrl, String.class, requestEntity);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonPayload, headers);
 
-// Print the response status code
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiUrl, requestEntity, String.class);
 
-if (responseEntity.getStatusCode().is2xxSuccessful()) {
-    ObjectMapper objectMapper = new ObjectMapper();
-    JsonNode flaskResponse = objectMapper.readTree(responseEntity.getBody());
-    JsonNode intents = flaskResponse.get("intents");
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            JsonNode llmResponse = objectMapper.readTree(responseEntity.getBody());
+            return processLLMResponse(llmResponse, conversationId);
+        } else {
+            // Handle non-successful response
+            return ResponseEntity.status(responseEntity.getStatusCode()).body("Error: Non-successful response from LLM API");
+        }
+    }
 
-    boolean closeConfidence = false; // Flag to check if confidence levels are close
-
-    if (intents.size() > 1) {
-        double firstIntentConfidence = intents.get(0).get("confidence").asDouble();
-        double secondIntentConfidence = intents.get(1).get("confidence").asDouble();
-
-        if (firstIntentConfidence - secondIntentConfidence < 0.03) {
-            closeConfidence = true; // Set flag to true if confidences are close
-
-            StringBuilder intentNames = new StringBuilder();
-            StringBuilder responseTexts = new StringBuilder();
-            StringBuilder confidences = new StringBuilder();
-
-            for (int i = 0; i < Math.min(3, intents.size()); i++) {
-                String intentName = intents.get(i).get("intent").asText();
-                double confidence = intents.get(i).get("confidence").asDouble();
+    private ResponseEntity<String> processFlaskResponse(JsonNode flaskResponse, Long conversationId) throws Exception {
+        JsonNode intents = flaskResponse.get("intents");
+        if (intents.size() == 0) {
+            throw new Exception("No intents found in Flask response");
+        }
+    
+        // Check for multiple intents with close confidence levels
+        boolean isCloseConfidence = false;
+        if (intents.size() > 1) {
+            double firstConfidence = intents.get(0).get("confidence").asDouble();
+            double secondConfidence = intents.get(1).get("confidence").asDouble();
+    
+            // Define the threshold for "close confidence"
+            final double CONFIDENCE_THRESHOLD = 0.03;
+            if (Math.abs(firstConfidence - secondConfidence) < CONFIDENCE_THRESHOLD) {
+                isCloseConfidence = true;
+            }
+        }
+    
+        if (isCloseConfidence) {
+            // Handle case where multiple intents have close confidence levels
+            StringBuilder responseBuilder = new StringBuilder();
+            for (JsonNode intentNode : intents) {
+                String intentName = intentNode.get("intent").asText();
                 IntentResponse intentResponse = intentResponseRepository.findByIntentName(intentName);
-
                 if (intentResponse != null) {
-                    if (i > 0) {
-                        intentNames.append("; ");
-                        responseTexts.append("; ");
-                        confidences.append("; ");
-                    }
-                    intentNames.append(intentName);
-                    responseTexts.append(intentResponse.getResponseText());
-                    confidences.append(confidence);
+                    responseBuilder.append(intentResponse.getResponseText()).append("\n");
                 }
             }
-
+    
             Message message = new Message();
-            message.setContent(responseTexts.toString());
-            message.setIntentName(intentNames.toString());
-            message.setConfidence(confidences.toString());
+            message.setContent(responseBuilder.toString());
             message.setMessageType("Responsemultiple");
             message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
             messageRepository.save(message);
-        }
-    }
-
-    // Proceed with this block only if closeConfidence is false
-    if (!closeConfidence) {
-        String intent = flaskResponse.get("intents").get(0).get("intent").asText();
-        System.out.println("Intent: " + intent); // Print the intent
-
-        IntentResponse intentResponse = intentResponseRepository.findByIntentName(intent);
-        if (intentResponse != null) {
-            Message message = new Message();
-            message.setContent(intentResponse.getResponseText());
-            message.setIntentName(intent);
-            message.setConfidence(flaskResponse.get("intents").get(0).get("confidence").asText());
-            message.setMessageType("Response");
-            message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
-            messageRepository.save(message);
+    
             return ResponseEntity.ok(String.valueOf(message.getId()));
         } else {
-            // Handle the case where there's no matching response
+            // Single intent handling (similar to previous implementation)
+            JsonNode topIntent = intents.get(0);
+            String intentName = topIntent.get("intent").asText();
+            double confidence = topIntent.get("confidence").asDouble();
+    
+            IntentResponse intentResponse = intentResponseRepository.findByIntentName(intentName);
+            if (intentResponse == null) {
+                throw new Exception("No response found for intent: " + intentName);
+            }
+    
             Message message = new Message();
-            message.setContent("Pour le moment, je ne suis pas en mesure de répondre à ta question, car je suis toujours en cours d'entraînement.");
-            // Set other properties like messageType, conversation, etc., as needed
-
+            message.setContent(intentResponse.getResponseText());
+            message.setIntentName(intentName);
+            message.setConfidence(Double.toString(confidence));
             message.setMessageType("Response");
             message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
             messageRepository.save(message);
-            return ResponseEntity.ok().body("No response found for intent: " + intent);
+    
+            return ResponseEntity.ok(String.valueOf(message.getId()));
         }
     }
-
-
-            } else {
-                // Handle non-successful response (e.g., 4xx or 5xx status code)
-                return ResponseEntity.status(responseEntity.getStatusCode()).body(null);
-            }
-        } catch (Exception e) {
-            // Handle any exceptions, e.g., Conversation not found
-            return ResponseEntity.badRequest().body(null);
+    private ResponseEntity<String> processLLMResponse(JsonNode llmResponse, Long conversationId) throws Exception {
+        JsonNode responseNode = llmResponse.get("response");
+        if (responseNode == null) {
+            throw new Exception("No response found in LLM response");
         }
-        return null;
+    
+        String responseText = responseNode.asText();
+    
+        Message message = new Message();
+        message.setContent(responseText);
+        message.setMessageType("ResponseGenerative");
+        message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
+        messageRepository.save(message);
+    
+        return ResponseEntity.ok(String.valueOf(message.getId()));
     }
-    }
+    // Additional private helper methods as needed
 }

@@ -28,6 +28,7 @@ public class UserController {
     }
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestParam String username,@RequestParam String password) {
+        
         boolean isUserAuthenticated = userService.loginUser(username,password);
 
         if (isUserAuthenticated) {
