@@ -8,7 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,17 +30,19 @@ public class UserController {
         return ResponseEntity.ok(createdUser);
     }
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestParam String username,@RequestParam String password) {
-        
-        boolean isUserAuthenticated = userService.loginUser(username,password);
-
-        if (isUserAuthenticated) {
-            return ResponseEntity.ok("Login successful");
+    public ResponseEntity<?> loginUser(@RequestParam String username, @RequestParam String password) {
+        User user = userService.loginUser(username, password);
+    
+        if (user != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Login successful");
+            response.put("userId", user.getId()); // Assuming the User object has an getId() method
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed");
+            Map<String, String> response = Collections.singletonMap("message", "Login failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
-
 //    @GetMapping
 //    public List<User> getAllUsers() {
 //        return userService.getAllUsers();

@@ -30,17 +30,15 @@ public class UserService {
         return userRepository.save(user);
     }
     
-    public boolean loginUser(String username,String password) {
-        // Business logic goes here
-        // For example, validating the user object
-        // Or throwing an exception if the user already exists
+    public User loginUser(String username, String password) {
         List<User> users = userRepository.findAll();
-        for (User u : users) {
-            if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
-                return true;
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return user; // Return the user object
             }
         }
-        return false;
+        return null; // Return null if user not found or password is incorrect
     }
+    
 
 }

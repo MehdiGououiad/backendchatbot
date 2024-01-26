@@ -2,6 +2,7 @@ package chatbot.controllers;
 
 import chatbot.entity.IntentResponse;
 import chatbot.entity.Message;
+import chatbot.entity.QuestionRequest;
 import chatbot.repository.ConversationRepository;
 import chatbot.repository.IntentResponseRepository;
 import chatbot.repository.MessageRepository;
@@ -12,9 +13,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,20 +46,20 @@ public class MessageController {
         this.conversationRepository = conversationRepository;
     }
 
-    @PostMapping("/ask")
-    public ResponseEntity<String> askQuestion(@RequestParam String question, @RequestParam Long conversationId, @RequestParam String version) {
-        try {
-            messageService.saveQuestionFromUser(question, conversationId);
+  @PostMapping("/ask")
+public ResponseEntity<String> askQuestion(@RequestBody QuestionRequest request) {
+    try {
+        messageService.saveQuestionFromUser(request.getQuestion(), request.getConversationId());
 
-            if ("2".equals(version)) {
-                return handleVersion2(question, conversationId);
-            } else {
-                return handleVersion1(question, conversationId);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        if ("2".equals(request.getVersion())) {
+            return handleVersion2(request.getQuestion(), request.getConversationId());
+        } else {
+            return handleVersion1(request.getQuestion(), request.getConversationId());
         }
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Error: " + e.getMessage());
     }
+}
 
     private ResponseEntity<String> handleVersion1(String question, Long conversationId) throws Exception {
         // Logic for version 1
@@ -67,20 +70,26 @@ public class MessageController {
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(completeUrl, String.class, requestEntity);
-
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(completeUrl, String.class, requestEntity);
+            
+            // Process the response assuming it's successful
             JsonNode flaskResponse = objectMapper.readTree(responseEntity.getBody());
             return processFlaskResponse(flaskResponse, conversationId);
-        } else {
-            // Handle non-successful response
-            return ResponseEntity.status(responseEntity.getStatusCode()).body("Error: Non-successful response from Flask API");
+        
+        } catch (Exception e) {
+            // Log the exception for debugging
+            System.out.println("Exception occurred while calling Embedding API: " + e.getMessage());
+            
+            // Return a different status code, e.g., 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Error: Embedding API is currently unavailable or returned an error.");
         }
+        
     }
 
     private ResponseEntity<String> handleVersion2(String question, Long conversationId) throws Exception {
         // Logic for version 2
-        String apiUrl = "http://localhost:8000/query";
+        String apiUrl = "http://192.168.3.20:8000/query";
         String jsonPayload = "{\"text\":\"" + question + "\"}";
 
         HttpHeaders headers = new HttpHeaders();
@@ -88,15 +97,22 @@ public class MessageController {
         HttpEntity<String> requestEntity = new HttpEntity<>(jsonPayload, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiUrl, requestEntity, String.class);
+       try {
+    ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiUrl, requestEntity, String.class);
+    
+    // Process the response assuming it's successful
+    JsonNode llmResponse = objectMapper.readTree(responseEntity.getBody());
+    return processLLMResponse(llmResponse, conversationId);
 
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            JsonNode llmResponse = objectMapper.readTree(responseEntity.getBody());
-            return processLLMResponse(llmResponse, conversationId);
-        } else {
-            // Handle non-successful response
-            return ResponseEntity.status(responseEntity.getStatusCode()).body("Error: Non-successful response from LLM API");
-        }
+} catch (Exception e) {
+    // Log the exception for debugging
+    System.out.println("Exception occurred: " + e.getMessage());
+    
+    // Handle the case where the LLM API is down, not reachable, or returns a non-2xx response
+    System.out.println("LLM API down or returned a non-2xx response");
+    return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Error: LLM API is currently unavailable or returned an error.");
+}
+
     }
 
     private ResponseEntity<String> processFlaskResponse(JsonNode flaskResponse, Long conversationId) throws Exception {
@@ -154,7 +170,6 @@ public class MessageController {
             message.setMessageType("Response");
             message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
             messageRepository.save(message);
-    
             return ResponseEntity.ok(String.valueOf(message.getId()));
         }
     }
@@ -163,15 +178,12 @@ public class MessageController {
         if (responseNode == null) {
             throw new Exception("No response found in LLM response");
         }
-    
         String responseText = responseNode.asText();
-    
         Message message = new Message();
         message.setContent(responseText);
         message.setMessageType("ResponseGenerative");
         message.setConversation(conversationRepository.findById(conversationId).orElseThrow(() -> new Exception("Conversation not found")));
         messageRepository.save(message);
-    
         return ResponseEntity.ok(String.valueOf(message.getId()));
     }
     // Additional private helper methods as needed
