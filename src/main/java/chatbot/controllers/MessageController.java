@@ -121,6 +121,7 @@ public ResponseEntity<String> askQuestion(@RequestBody QuestionRequest request) 
             throw new Exception("No intents found in Flask response");
         }
     
+        
         // Check for multiple intents with close confidence levels
         boolean isCloseConfidence = false;
         if (intents.size() > 1) {
