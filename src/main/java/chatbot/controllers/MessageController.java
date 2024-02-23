@@ -89,7 +89,7 @@ public ResponseEntity<String> askQuestion(@RequestBody QuestionRequest request) 
 
     private ResponseEntity<String> handleVersion2(String question, Long conversationId) throws Exception {
         // Logic for version 2
-        String apiUrl = "http://192.168.3.20:8000/query";
+        String apiUrl = "http://localhost:8000/query";
         String jsonPayload = "{\"text\":\"" + question + "\"}";
 
         HttpHeaders headers = new HttpHeaders();
