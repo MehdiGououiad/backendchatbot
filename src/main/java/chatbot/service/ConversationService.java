@@ -2,9 +2,14 @@ package chatbot.service;
 
 import chatbot.entity.Conversation;
 import chatbot.entity.Message;
+import chatbot.entity.MessageReport;
 import chatbot.entity.User;
 import chatbot.repository.ConversationRepository;
+import chatbot.repository.MessageReportRepository;
+import chatbot.repository.MessageRepository;
 import chatbot.repository.UserRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,16 +19,20 @@ import java.util.*;
 @Service
 public class ConversationService {
     private final ConversationRepository conversationRepository;
+    private final UserRepository userRepository;
+    private final MessageRepository messageRepository;
+    private final MessageReportRepository messageReportRepository; // Assume this exists
 
     @Autowired
-    public ConversationService(ConversationRepository conversationRepository) {
+    public ConversationService(ConversationRepository conversationRepository,
+                               UserRepository userRepository,
+                               MessageRepository messageRepository,
+                               MessageReportRepository messageReportRepository) {
         this.conversationRepository = conversationRepository;
+        this.userRepository = userRepository;
+        this.messageRepository = messageRepository;
+        this.messageReportRepository = messageReportRepository; // Initialize in constructor
     }
-
-
-    @Autowired
-    private UserRepository userRepository;
-
     public Conversation createConversation(Long userId) throws Exception {
 
         // Find the user by userId
@@ -76,36 +85,29 @@ public class ConversationService {
         return messages;
     }
 
+    @Transactional
     public void deleteConversationById(Long conversationId) throws Exception {
         // Check if the conversation exists
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new Exception("Conversation not found with ID: " + conversationId));
-//        List<Message> messagesToDelete = messageRepository.findByConversation(conversation);
-//        messageRepository.deleteAll(messagesToDelete);
 
-        // Delete the conversation
+        // Find all Messages associated with the Conversation and delete them
+        // (and their associated MessageReports if applicable)
+        List<Message> messagesToDelete = messageRepository.findByConversation(conversation);
+       for (Message message : messagesToDelete) {
+    // Fetch associated MessageReports
+    List<MessageReport> reportsToDelete = messageReportRepository.findByMessage(message);
+
+    // Delete fetched MessageReportsv
+    messageReportRepository.deleteAll(reportsToDelete);
+}
+
+        // Now delete all messages for the conversation
+        messageRepository.deleteAll(messagesToDelete);
+
+        // Finally, delete the conversation itself
         conversationRepository.delete(conversation);
     }
-//    @Scheduled(cron = "0 0 0 * * *") // Run daily at midnight
-//    public void deleteOldConversations() {
-//        // Calculate the date 10 days ago
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.add(Calendar.DAY_OF_YEAR, -1);
-//        Date tenDaysAgo = calendar.getTime();
-//
-//        // Find conversations created before 10 days ago
-//        List<Conversation> oldConversations = conversationRepository.findByTimeStamp(tenDaysAgo);
-//
-//        // Delete the old conversations
-//        conversationRepository.deleteAll(oldConversations);
-//    }
-
-    //TODO: Implement the methods for the ConversationService class
-    //i need a method to get messages of one conversation id
-    // i need a method to get all conversations of one user id
-    // i need a method to get all conversations
-    // i need a method to create a conversation
-    // i need a method to delete a conversation
 
 
 }

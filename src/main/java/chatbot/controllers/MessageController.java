@@ -2,10 +2,13 @@ package chatbot.controllers;
 
 import chatbot.entity.IntentResponse;
 import chatbot.entity.Message;
+import chatbot.entity.MessageReport;
 import chatbot.entity.QuestionRequest;
+import chatbot.entity.ReportRequest;
 import chatbot.repository.ConversationRepository;
 import chatbot.repository.IntentResponseRepository;
 import chatbot.repository.MessageRepository;
+import chatbot.service.MessageReportService;
 import chatbot.service.MessageService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,17 +36,22 @@ import java.util.Map;
 public class MessageController {
 
     private final MessageService messageService;
+    private final MessageReportService messageReportService;
+
     private final ObjectMapper objectMapper;
     private final IntentResponseRepository intentResponseRepository;
     private final MessageRepository messageRepository;
     private final ConversationRepository conversationRepository;
 
-    public MessageController(MessageService messageService, ObjectMapper objectMapper, IntentResponseRepository intentResponseRepository, MessageRepository messageRepository, ConversationRepository conversationRepository) {
+
+    public MessageController(MessageService messageService , MessageReportService messageReportService,  ObjectMapper objectMapper, IntentResponseRepository intentResponseRepository, MessageRepository messageRepository, ConversationRepository conversationRepository) {
         this.messageService = messageService;
         this.objectMapper = objectMapper;
         this.intentResponseRepository = intentResponseRepository;
         this.messageRepository = messageRepository;
         this.conversationRepository = conversationRepository;
+        this.messageReportService = messageReportService;
+
     }
 
   @PostMapping("/ask")
@@ -60,6 +68,18 @@ public ResponseEntity<String> askQuestion(@RequestBody QuestionRequest request) 
         return ResponseEntity.badRequest().body("Error: " + e.getMessage());
     }
 }
+
+
+@PostMapping("/report")
+public ResponseEntity<MessageReport> reportMessage(@RequestBody ReportRequest request) {
+
+        Long messageId = request.getMessageId();
+        String reason = request.getReason();
+        MessageReport reportedMessage = messageReportService.reportMessage(messageId, reason);
+        return ResponseEntity.ok(reportedMessage);
+        
+    }
+
 
     private ResponseEntity<String> handleVersion1(String question, Long conversationId) throws Exception {
         // Logic for version 1
@@ -145,7 +165,7 @@ public ResponseEntity<String> askQuestion(@RequestBody QuestionRequest request) 
                     responseBuilder.append(intentResponse.getResponseText()).append("\n");
                 }
             }
-    
+            
             Message message = new Message();
             message.setContent(responseBuilder.toString());
             message.setMessageType("Responsemultiple");

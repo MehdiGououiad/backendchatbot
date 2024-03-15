@@ -79,12 +79,5 @@ return ResponseEntity.ok(conversations);
         return ResponseEntity.ok(conversations);
     }
 
-    // TODO: Implement the methods for the ConversationController class
-    // i need a method to get messages of one conversation id
-    // i need a method to get all conversations of one user id
-    // i need a method to modify a conversation title
-    // i need a method to create a conversation
-    // i need a method to delete a conversation
-    // i have to do method delete all conversations
 
 }
